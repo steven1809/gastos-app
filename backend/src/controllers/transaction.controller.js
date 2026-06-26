@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const { Transaction, Category, GoalContribution, Goal } = require('../models');
 
 const getAll = async (req, res) => {
@@ -185,13 +185,14 @@ const getSummary = async (req, res) => {
     const now = new Date();
     const { month = now.getMonth() + 1, year = now.getFullYear() } = req.query;
 
-    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
-    const endDate = `${year}-${String(month).padStart(2, '0')}-31`;
-
+    // Use Sequelize.where with strftime for proper month/year filtering
     const transactions = await Transaction.findAll({
       where: {
         userId: req.user.id,
-        date: { [Op.between]: [startDate, endDate] }
+        [Op.and]: [
+          Sequelize.where(Sequelize.fn('strftime', '%m', Sequelize.col('date')), String(month).padStart(2, '0')),
+          Sequelize.where(Sequelize.fn('strftime', '%Y', Sequelize.col('date')), String(year))
+        ]
       },
       include: [{ model: Category }]
     });
@@ -256,6 +257,7 @@ const getSummary = async (req, res) => {
       dailyTrend
     });
   } catch (error) {
+    console.error('Error getting summary:', error);
     res.status(500).json({ error: 'Error al obtener resumen' });
   }
 };

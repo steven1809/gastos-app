@@ -46,30 +46,40 @@ const Reports = () => {
   const currentYear = now.getFullYear();
 
   const presets = [
-    { label: 'Este mes', getDates: () => ({
-      start: `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`,
-      end: `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`
-    }) },
+    { label: 'Este mes', getDates: () => {
+        const firstDay = new Date(currentYear, currentMonth - 1, 1);
+        const lastDay = new Date(currentYear, currentMonth, 0);
+        return {
+          start: firstDay.toISOString().split('T')[0],
+          end: lastDay.toISOString().split('T')[0]
+        };
+      }
+    },
     { label: 'Mes anterior', getDates: () => {
-      const prevMonth = currentMonth === 1 ? 12 : currentMonth -1;
-      const prevYear = currentMonth === 1 ? currentYear -1 : currentYear;
-      return {
-        start: `${prevYear}-${String(prevMonth).padStart(2, '0')}-01`,
-        end: `${prevYear}-${String(prevMonth).padStart(2, '0')}-31`
-      };
-    } },
+        const prevMonthDate = new Date(currentYear, currentMonth - 2, 1);
+        const firstDay = new Date(prevMonthDate.getFullYear(), prevMonthDate.getMonth(), 1);
+        const lastDay = new Date(prevMonthDate.getFullYear(), prevMonthDate.getMonth() + 1, 0);
+        return {
+          start: firstDay.toISOString().split('T')[0],
+          end: lastDay.toISOString().split('T')[0]
+        };
+      }
+    },
     { label: 'Últimos 3 meses', getDates: () => {
-      const threeMonthsAgo = new Date(now);
-      threeMonthsAgo.setMonth(now.getMonth() -3);
-      return {
-        start: `${threeMonthsAgo.getFullYear()}-${String(threeMonthsAgo.getMonth()+1).padStart(2, '0')}-01`,
-        end: `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`
-      };
-    } },
+        const threeMonthsAgo = new Date(now);
+        threeMonthsAgo.setMonth(now.getMonth() - 3);
+        const firstDay = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth(), 1);
+        const lastDay = new Date(currentYear, currentMonth, 0);
+        return {
+          start: firstDay.toISOString().split('T')[0],
+          end: lastDay.toISOString().split('T')[0]
+        };
+      }
+    },
     { label: 'Este año', getDates: () => ({
       start: `${currentYear}-01-01`,
       end: `${currentYear}-12-31`
-    }) }
+    })}
   ];
 
   const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
@@ -80,18 +90,21 @@ const Reports = () => {
   const loadReportData = async () => {
     try {
       setLoading(true);
+      console.log('Loading report data for:', dateRange);
       const params = dateRange.start ? { startDate: dateRange.start, endDate: dateRange.end } : {};
       const [reportRes, txRes] = await Promise.all([
         reportService.getSummary(params),
         transactionService.getAll(params)
       ]);
       
+      console.log('Report response:', reportRes);
+      
       const transactionsData = txRes.transactions || txRes;
       
       setReportData(reportRes);
       setTransactions(transactionsData);
     } catch (err) {
-      console.error(err);
+      console.error('Error loading reports:', err);
       setError('Error al cargar reportes');
     } finally {
       setLoading(false);
@@ -138,21 +151,10 @@ const Reports = () => {
     }
   };
 
-  const getExpenseCategories = () => {
-    if (!reportData?.topExpenseCategories) return [];
-    
-    const totalAmount = reportData.topExpenseCategories.reduce((sum, c) => sum + c.amount, 0);
-    
-    return reportData.topExpenseCategories.map((cat) => ({
-      ...cat,
-      percentage: totalAmount > 0 ? (cat.amount / totalAmount) * 100 : 0
-    }));
-  };
-
   const getMonthlyComparisonData = () => {
-    if (!reportData?.monthlyComparison) {
+    if (!reportData?.monthlyComparison || reportData.monthlyComparison.length === 0) {
       return {
-        labels: ['Jun'],
+        labels: [''],
         datasets: [
           { label: 'Ingresos', data: [0], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 },
           { label: 'Gastos', data: [0], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4 }
@@ -161,36 +163,20 @@ const Reports = () => {
     }
     
     return {
-      labels: reportData.monthlyComparison.map((m) => m.month.substring(0, 3)),
+      labels: reportData.monthlyComparison.map((m) => m.month),
       datasets: [
-        { 
-          label: 'Ingresos', 
-          data: reportData.monthlyComparison.map((m) => m.income), 
-          borderColor: '#22c55e', 
-          backgroundColor: 'rgba(34,197,94,0.1)', 
-          fill: true, 
-          tension: 0.4 
-        },
-        { 
-          label: 'Gastos', 
-          data: reportData.monthlyComparison.map((m) => m.expenses), 
-          borderColor: '#ef4444', 
-          backgroundColor: 'rgba(239,68,68,0.1)', 
-          fill: true, 
-          tension: 0.4 
-        }
+        { label: 'Ingresos', data: reportData.monthlyComparison.map((m) => m.income), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 },
+        { label: 'Gastos', data: reportData.monthlyComparison.map((m) => m.expenses), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4 }
       ]
     };
   };
 
-  const expenseCategories = getExpenseCategories();
   const chartData = getMonthlyComparisonData();
 
   return (
     <div className="space-y-6">
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
-      {/* Mobile: Title above, buttons below */}
       <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
         <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
         <ExportButtons
@@ -202,7 +188,6 @@ const Reports = () => {
       </div>
 
       <Card>
-        {/* Period buttons: 2x2 grid on mobile, flex wrap on desktop */}
         <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap mb-4">
           {presets.map((p) => (
             <Button
@@ -217,7 +202,6 @@ const Reports = () => {
           ))}
         </div>
         
-        {/* Date pickers: stack on mobile, horizontal on desktop */}
         <div className="flex flex-col gap-2 md:flex-row md:gap-3 md:items-center">
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-600">Desde</label>
@@ -265,14 +249,14 @@ const Reports = () => {
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
               <p className="text-sm text-purple-700 font-medium">Tasa de Ahorro</p>
               <p className="text-3xl font-bold text-purple-800 mt-2">
-                {((reportData?.savingsRate || 0)).toFixed(1)}%
+                {(reportData?.savingsRate || 0).toFixed(1) + '%'}
               </p>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Tendencia Mensual">
-              <div className="h-[200px] md:h-[300px]">
+              <div style={{ height: '200px', md: { height: '300px' }}>
                 <Line
                   data={chartData}
                   options={{
@@ -281,31 +265,36 @@ const Reports = () => {
                     interaction: { intersect: false, mode: 'index' },
                     plugins: {
                       legend: { position: 'top' },
-                      tooltip: { callbacks: {
-                        label: function(ctx) {
-                          return `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`;
+                      tooltip: {
+                        callbacks: {
+                          label: function(ctx) {
+                            return `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`;
+                          }
                         }
-                      } }
+                      }
                     },
                     scales: {
                       x: { grid: { display: false } },
                       y: { grid: { color: 'rgba(0,0,0,0.05)' } }
-                    }
                   }}
                 />
               </div>
             </Card>
             <Card title="Top Categorías de Gastos">
               <div className="space-y-4">
-                {expenseCategories.map((cat) => (
-                  <div key={cat.name} className="flex items-center gap-3">
-                    <Badge className="min-w-[120px]">{cat.name}</Badge>
-                    <div className="flex-1">
-                      <ProgressBar percentage={cat.percentage} />
+                {!reportData?.topExpenseCategories || reportData.topExpenseCategories.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500">No hay gastos en este período</p>
+                ) : (
+                  reportData.topExpenseCategories.map((cat) => (
+                    <div key={cat.name} className="flex items-center gap-3">
+                      <Badge color={cat.color} className="min-w-[120px]">{cat.name}</Badge>
+                      <div className="flex-1">
+                        <ProgressBar percentage={cat.percentage} />
+                      </div>
+                      <p className="font-semibold min-w-[100px] text-right">{formatCurrency(cat.amount)}</p>
                     </div>
-                    <p className="font-semibold min-w-[100px] text-right">{formatCurrency(cat.amount)}</p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Card>
           </div>

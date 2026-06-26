@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const { Transaction, Category } = require('../models');
@@ -20,8 +20,11 @@ const getSummaryReport = async (req, res) => {
     let finalStartDate = startDate;
     let finalEndDate = endDate;
     if (!startDate || !endDate) {
-      finalStartDate = `${now.getFullYear()}-01-01`;
-      finalEndDate = `${now.getFullYear()}-12-31`;
+      // Default to current month
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      finalStartDate = firstDay.toISOString().split('T')[0];
+      finalEndDate = lastDay.toISOString().split('T')[0];
     }
 
     const transactions = await Transaction.findAll({
@@ -41,48 +44,71 @@ const getSummaryReport = async (req, res) => {
     const balance = totalIncome - totalExpenses;
     const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
 
-    const expenseCategories = {};
-    const incomeCategories = {};
+    const expenseCategoriesMap = {};
+    const incomeCategoriesMap = {};
     transactions.forEach(t => {
       if (t.Category) {
         if (t.type === 'expense') {
-          expenseCategories[t.Category.name] = (expenseCategories[t.Category.name] || 0) + parseFloat(t.amount);
+          if (!expenseCategoriesMap[t.Category.id]) {
+            expenseCategoriesMap[t.Category.id] = {
+              name: t.Category.name,
+              color: t.Category.color,
+              amount: 0
+            };
+          }
+          expenseCategoriesMap[t.Category.id].amount += parseFloat(t.amount);
         } else {
-          incomeCategories[t.Category.name] = (incomeCategories[t.Category.name] || 0) + parseFloat(t.amount);
+          if (!incomeCategoriesMap[t.Category.id]) {
+            incomeCategoriesMap[t.Category.id] = {
+              name: t.Category.name,
+              color: t.Category.color,
+              amount: 0
+            };
+          }
+          incomeCategoriesMap[t.Category.id].amount += parseFloat(t.amount);
         }
       }
     });
 
-    const topExpenseCategories = Object.entries(expenseCategories)
-      .sort(([, a], [, b]) => b - a)
+    const topExpenseCategories = Object.values(expenseCategoriesMap)
+      .sort((a, b) => b.amount - a.amount)
       .slice(0, 5)
-      .map(([name, amount]) => ({ name, amount }));
+      .map(cat => ({
+        ...cat,
+        percentage: totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0
+      }));
     
-    const topIncomeCategories = Object.entries(incomeCategories)
-      .sort(([, a], [, b]) => b - a)
+    const topIncomeCategories = Object.values(incomeCategoriesMap)
+      .sort((a, b) => b.amount - a.amount)
       .slice(0, 5)
-      .map(([name, amount]) => ({ name, amount }));
+      .map(cat => ({
+        ...cat,
+        percentage: totalIncome > 0 ? (cat.amount / totalIncome) * 100 : 0
+      }));
 
     const monthlyComparison = [];
-    for (let i = 0; i < 6; i++) {
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
-      const start = `${year}-${String(month).padStart(2, '0')}-01`;
-      const end = `${year}-${String(month).padStart(2, '0')}-31`;
       
       const monthTransactions = await Transaction.findAll({
         where: {
           userId: req.user.id,
-          date: { [Op.between]: [start, end] }
-        }
+          [Op.and]: [
+            Sequelize.where(Sequelize.fn('strftime', '%m', Sequelize.col('date')), String(month).padStart(2, '0')),
+            Sequelize.where(Sequelize.fn('strftime', '%Y', Sequelize.col('date')), String(year))
+          ]
+        },
+        include: [{ model: Category }]
       });
       
       const income = monthTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
       const expenses = monthTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
       
-      monthlyComparison.unshift({
-        month: getMonthName(month),
+      monthlyComparison.push({
+        month: months[month - 1],
         income,
         expenses,
         balance: income - expenses
@@ -90,7 +116,6 @@ const getSummaryReport = async (req, res) => {
     }
 
     res.json({
-      period: { start: finalStartDate, end: finalEndDate },
       totalIncome,
       totalExpenses,
       balance,
@@ -101,7 +126,7 @@ const getSummaryReport = async (req, res) => {
       transactions: type === 'detailed' ? transactions : undefined
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error generating summary report:', error);
     res.status(500).json({ error: 'Error al generar reporte' });
   }
 };

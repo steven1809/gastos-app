@@ -15,6 +15,7 @@ import transactionService from '../services/transaction.service';
 import budgetService from '../services/budget.service';
 import categoryService from '../services/category.service';
 import goalService from '../services/goal.service';
+import reportService from '../services/report.service';
 import { useAuth } from '../context/AuthContext';
 import Card from '../components/common/Card';
 import Badge from '../components/common/Badge';
@@ -38,14 +39,15 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [reportData, setReportData] = useState(null);
   const [budgetStatus, setBudgetStatus] = useState(null);
   const [categories, setCategories] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [activeGoals, setActiveGoals] = useState([]);
   
-  const currentDate = new Date();
-  const [month, setMonth] = useState(currentDate.getMonth() + 1);
-  const [year, setYear] = useState(currentDate.getFullYear());
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(now.getFullYear());
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -58,59 +60,35 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const [transactionsRes, budgetData, categoriesData, goalsData] = await Promise.all([
-        transactionService.getAll({ month, year }),
+      
+      console.log('Loading dashboard data for:', { month, year });
+      
+      const [summaryRes, budgetRes, categoryRes, goalsRes, reportRes] = await Promise.all([
+        transactionService.getSummary(month, year),
         budgetService.getMonthlyStatus(month, year),
         categoryService.getAll(),
-        goalService.getAll({ status: 'active' })
+        goalService.getAll({ status: 'active' }),
+        reportService.getSummary()
       ]);
+      
+      console.log('Summary response:', summaryRes);
+      
+      setSummary(summaryRes);
+      setBudgetStatus(budgetRes);
+      setCategories(categoryRes);
+      setActiveGoals(goalsRes);
+      setReportData(reportRes);
+      
+      // Load recent transactions
+      const transactionsRes = await transactionService.getAll({ month, year, includeGoalContributions: true });
       const transactions = transactionsRes.transactions || transactionsRes;
-      
-      const totalIncome = transactions
-        .filter(t => t.type === 'income')
-        .reduce((sum, t) => sum + Number(t.amount), 0);
-        
-      const totalExpenses = transactions
-        .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + Number(t.amount), 0);
-        
-      const expensesByCategory = {};
-      transactions
-        .filter(t => t.type === 'expense')
-        .forEach(t => {
-          if (t.Category) {
-            const key = t.Category.id;
-            if (!expensesByCategory[key]) {
-              expensesByCategory[key] = {
-                categoryName: t.Category.name,
-                categoryColor: t.Category.color,
-                amount: 0
-              };
-            }
-            expensesByCategory[key].amount += Number(t.amount);
-          }
-        });
-        
-      const byCategory = Object.values(expensesByCategory);
-      
-      setSummary({
-        totalIncome,
-        totalExpenses,
-        balance: totalIncome - totalExpenses,
-        byCategory,
-        dailyTrend: []
-      });
-      
-      setBudgetStatus(budgetData);
-      setCategories(categoriesData);
-      setActiveGoals(goalsData);
-      
       const sortedTransactions = [...transactions].sort(
         (a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
       );
       setRecentTransactions(sortedTransactions.slice(0, 5));
       
     } catch (err) {
+      console.error('Error loading dashboard data:', err);
       setError('Error al cargar datos del dashboard');
     } finally {
       setLoading(false);
@@ -132,7 +110,6 @@ const Dashboard = () => {
     const percentagePaid = (spent / total) * 100;
     const remaining = total - spent;
 
-    // Caso 1: Pagado al 100% (sin importar la fecha)
     if (percentagePaid >= 100) {
       return { 
         text: 'Pagado', 
@@ -143,7 +120,6 @@ const Dashboard = () => {
       };
     }
 
-    // Caso 2: No se ha pagado nada
     if (percentagePaid === 0) {
       return { 
         text: 'Sin pagar', 
@@ -154,7 +130,6 @@ const Dashboard = () => {
       };
     }
 
-    // Caso 3: Falta pagar algo (entre 1% y 99%)
     return { 
       text: `Falta ${formatCurrency(remaining)}`, 
       color: 'bg-yellow-100 text-yellow-800', 
@@ -180,13 +155,22 @@ const Dashboard = () => {
   };
 
   const doughnutData = () => {
-    if (!summary?.byCategory) return { labels: [], datasets: [] };
+    if (!summary?.byCategory || summary.byCategory.length === 0) {
+      return { 
+        labels: ['Sin gastos'],
+        datasets: [{
+          data: [1],
+          backgroundColor: ['#e5e7eb'],
+          borderWidth: 2
+        }]
+      };
+    }
     return {
-      labels: summary.byCategory.map(cat => cat.categoryName),
+      labels: summary.byCategory.map(c => c.categoryName),
       datasets: [
         {
-          data: summary.byCategory.map(cat => cat.amount),
-          backgroundColor: summary.byCategory.map(cat => cat.categoryColor || '#6366f1'),
+          data: summary.byCategory.map(c => c.amount),
+          backgroundColor: summary.byCategory.map(c => c.categoryColor || '#6366f1'),
           borderWidth: 2
         }
       ]
@@ -194,28 +178,26 @@ const Dashboard = () => {
   };
 
   const barData = () => {
-    if (!summary) return { labels: [], datasets: [] };
-    
-    const chartMonths = [];
-    const incomeData = [];
-    const expenseData = [];
-    
-    const monthLabel = currentDate.toLocaleDateString('es-ES', { month: 'short' });
-    chartMonths.push(monthLabel);
-    incomeData.push(summary.totalIncome);
-    expenseData.push(summary.totalExpenses);
-    
+    if (!reportData?.monthlyComparison) {
+      return {
+        labels: [''],
+        datasets: [
+          { label: 'Ingresos', data: [0], backgroundColor: '#22c55e' },
+          { label: 'Gastos', data: [0], backgroundColor: '#ef4444' }
+        ]
+      };
+    }
     return {
-      labels: chartMonths,
+      labels: reportData.monthlyComparison.map(m => m.month),
       datasets: [
         {
           label: 'Ingresos',
-          data: incomeData,
+          data: reportData.monthlyComparison.map(m => m.income),
           backgroundColor: '#22c55e'
         },
         {
           label: 'Gastos',
-          data: expenseData,
+          data: reportData.monthlyComparison.map(m => m.expenses),
           backgroundColor: '#ef4444'
         }
       ]
@@ -273,7 +255,7 @@ const Dashboard = () => {
           {getGreeting()}, {user?.name || user?.username || 'usuario'}! 👋
         </h1>
         <p className="text-gray-600 mt-2 text-base md:text-lg">
-          Aquí tienes el resumen de tus finanzas para {currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+          Aquí tienes el resumen de tus finanzas para {months[month - 1]} {year}
         </p>
       </div>
 
@@ -304,8 +286,8 @@ const Dashboard = () => {
         <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-600 font-medium mb-1 text-sm">Total Ingresos</p>
-              <p className="text-2xl md:text-3xl font-bold text-green-700">{formatCurrency(summary?.totalIncome || 0)}</p>
+              <p className="text-green-700 font-medium mb-1 text-sm">Total Ingresos</p>
+              <p className="text-2xl md:text-3xl font-bold text-green-800">{formatCurrency(summary?.totalIncome || 0)}</p>
             </div>
             <div className="bg-green-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,8 +300,8 @@ const Dashboard = () => {
         <Card className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-red-600 font-medium mb-1 text-sm">Total Gastos</p>
-              <p className="text-2xl md:text-3xl font-bold text-red-700">{formatCurrency(summary?.totalExpenses || 0)}</p>
+              <p className="text-red-700 font-medium mb-1 text-sm">Total Gastos</p>
+              <p className="text-2xl md:text-3xl font-bold text-red-800">{formatCurrency(summary?.totalExpenses || 0)}</p>
             </div>
             <div className="bg-red-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,7 +314,7 @@ const Dashboard = () => {
         <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-indigo-600 font-medium mb-1 text-sm">Balance</p>
+              <p className="text-indigo-700 font-medium mb-1 text-sm">Balance</p>
               <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700' : 'text-red-700'}`}>{formatCurrency(summary?.balance || 0)}</p>
             </div>
             <div className="bg-indigo-500 rounded-full p-2 md:p-3">
@@ -353,14 +335,14 @@ const Dashboard = () => {
           } p-4>
             <div className="flex items-center justify-between">
               <div>
-                <p className={`font-medium mb-1 text-sm`} style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
+                <p className={`font-medium mb-1 text-sm`} style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
                   {dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? 'Todo pagado' : dashboardSummary.totalPaid > 0 ? 'Falta pagar' : 'Sin pagos'}
                 </p>
-                <p className="text-xl md:text-2xl font-bold" style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
+                <p className="text-xl md:text-2xl font-bold" style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
                   {formatCurrency(dashboardSummary.totalPaid)} / {formatCurrency(dashboardSummary.totalBudgeted)}
                 </p>
                 {dashboardSummary.remaining > 0 && (
-                  <p className="text-xs md:text-sm font-semibold mt-1" style={{ color: dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
+                  <p className="text-xs md:text-sm font-semibold mt-1" style={{ color: dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
                     Falta: {formatCurrency(dashboardSummary.remaining)}
                   </p>
                 )}
@@ -529,7 +511,11 @@ const Dashboard = () => {
               <div key={tx.id} className="flex items-center justify-between py-2 border-b border-gray-100">
                 <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
                   <span className="text-xs md:text-sm text-gray-500 w-16 md:w-24 flex-shrink-0">{tx.date}</span>
-                  <Badge color={tx.Category?.color || '#6366f1'} className="text-xs flex-shrink-0">{tx.Category?.name}</Badge>
+                  {tx.isGoalContribution ? (
+                    <Badge color="#6366f1" className="flex-shrink-0">🎯 Meta</Badge>
+                  ) : tx.Category ? (
+                    <Badge color={tx.Category.color} className="flex-shrink-0">{tx.Category.name}</Badge>
+                  ) : null}
                   <span className="text-gray-700 text-xs md:text-sm truncate">{tx.description}</span>
                 </div>
                 <div className="flex-shrink-0 ml-2">
