@@ -14,6 +14,7 @@ import { Doughnut, Bar } from 'react-chartjs-2';
 import transactionService from '../services/transaction.service';
 import budgetService from '../services/budget.service';
 import categoryService from '../services/category.service';
+import goalService from '../services/goal.service';
 import { useAuth } from '../context/AuthContext';
 import Card from '../components/common/Card';
 import Badge from '../components/common/Badge';
@@ -40,6 +41,7 @@ const Dashboard = () => {
   const [budgetStatus, setBudgetStatus] = useState(null);
   const [categories, setCategories] = useState([]);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [activeGoals, setActiveGoals] = useState([]);
   
   const currentDate = new Date();
   const [month, setMonth] = useState(currentDate.getMonth() + 1);
@@ -56,10 +58,11 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const [transactionsRes, budgetData, categoriesData] = await Promise.all([
+      const [transactionsRes, budgetData, categoriesData, goalsData] = await Promise.all([
         transactionService.getAll({ month, year }),
         budgetService.getMonthlyStatus(month, year),
-        categoryService.getAll()
+        categoryService.getAll(),
+        goalService.getAll({ status: 'active' })
       ]);
       const transactions = transactionsRes.transactions || transactionsRes;
       
@@ -100,6 +103,7 @@ const Dashboard = () => {
       
       setBudgetStatus(budgetData);
       setCategories(categoriesData);
+      setActiveGoals(goalsData);
       
       const sortedTransactions = [...transactions].sort(
         (a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
@@ -254,6 +258,13 @@ const Dashboard = () => {
 
   const dashboardSummary = getDashboardSummaryStatus();
 
+  const getProgressBarColor = (percentage) => {
+    if (percentage >= 100) return 'bg-green-500';
+    if (percentage >= 70) return 'bg-blue-500';
+    if (percentage >= 30) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Saludo - todo el ancho */}
@@ -365,6 +376,55 @@ const Dashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
+            </div>
+          </Card>
+        )}
+      </div>
+
+      {/* Goals Section */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg md:text-xl font-bold text-gray-900">🎯 Progreso de Metas</h2>
+          <Link to="/goals" className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Ver todas →</Link>
+        </div>
+
+        {activeGoals.length > 0 ? (
+          <div className="space-y-3">
+            {activeGoals.slice(0, 3).map((goal) => {
+              const percentage = Math.min(100, goal.percentage || 0);
+              
+              return (
+                <Card key={goal.id} className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{goal.icon}</span>
+                      <span className="font-medium text-gray-900">{goal.name}</span>
+                    </div>
+                    <span className="font-bold">{Math.round(percentage)}%</span>
+                  </div>
+                  
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                    <div
+                      className={`h-2.5 rounded-full transition-all duration-300 ${getProgressBarColor(percentage)}`}
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>{formatCurrency(goal.currentAmount || 0)} guardados</span>
+                    <span>{formatCurrency(goal.targetAmount)} objetivo</span>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <Card>
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">No tienes metas activas</p>
+              <Link to="/goals">
+                <Button>Crear tu primera meta</Button>
+              </Link>
             </div>
           </Card>
         )}

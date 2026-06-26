@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import goalService from '../services/goal.service';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
@@ -50,7 +50,9 @@ const Goals = () => {
   const [goalToDelete, setGoalToDelete] = useState(null);
   const [deleteContributionConfirmOpen, setDeleteContributionConfirmOpen] = useState(false);
   const [contributionToDelete, setContributionToDelete] = useState(null);
-  
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const menuRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -91,6 +93,19 @@ const Goals = () => {
     loadData();
   }, []);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleOpenModal = (goal = null) => {
     setEditingGoal(goal);
     if (goal) {
@@ -117,6 +132,7 @@ const Goals = () => {
       setTargetAmountDisplay('');
     }
     setModalOpen(true);
+    setOpenMenuId(null);
   };
 
   const handleSaveGoal = async () => {
@@ -154,6 +170,7 @@ const Goals = () => {
       await goalService.remove(goalToDelete.id);
       setSuccessMessage('Meta cancelada');
       setDeleteConfirmModalOpen(false);
+      setOpenMenuId(null);
       loadData();
     } catch (err) {
       setError('Error al cancelar meta');
@@ -169,6 +186,7 @@ const Goals = () => {
     });
     setContributionAmountDisplay('');
     setContributionModalOpen(true);
+    setOpenMenuId(null);
   };
 
   const handleSaveContribution = async () => {
@@ -203,6 +221,7 @@ const Goals = () => {
   const handleOpenHistoryModal = (goal) => {
     setSelectedGoalForHistory(goal);
     setHistoryModalOpen(true);
+    setOpenMenuId(null);
   };
 
   const handleDeleteContribution = async () => {
@@ -246,7 +265,7 @@ const Goals = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" ref={menuRef}>
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
       {successMessage && (
         <Alert type="success" message={successMessage} onClose={() => setSuccessMessage(null)} />
@@ -314,7 +333,7 @@ const Goals = () => {
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <div className="h-48 bg-gray-200 rounded-lg"></div>
+              <div className="h-96 bg-gray-200 rounded-lg"></div>
             </Card>
           ))
         ) : (
@@ -327,14 +346,14 @@ const Goals = () => {
                   : goal.status === 'cancelled' 
                     ? 'bg-gray-50 border-gray-200' 
                     : 'border-transparent'
-              }`}
+              } relative`}
             >
               {goal.isOverdue && goal.status === 'active' && (
                 <div className="bg-red-100 text-red-800 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
                   ⚠️ Fecha límite vencida
                 </div>
               )}
-              
+
               {goal.status === 'completed' && (
                 <div className="flex items-center gap-2 mb-4">
                   <Badge className="bg-green-100 text-green-800 border border-green-200">
@@ -355,28 +374,26 @@ const Goals = () => {
                 </div>
                 <div className="relative">
                   <button
+                    onClick={() => setOpenMenuId(openMenuId === goal.id ? null : goal.id)}
                     className="text-gray-500 hover:text-gray-700 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
                   >
                     ⋮
                   </button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 hidden group-hover:block">
-                    <div className="py-1">
+                  {openMenuId === goal.id && (
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10">
                       {goal.status === 'active' && (
                         <button
                           onClick={() => handleOpenModal(goal)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2"
                         >
                           ✏️ Editar meta
                         </button>
                       )}
                       <button
                         onClick={() => handleOpenHistoryModal(goal)}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2"
                       >
-                        📜 Ver historial
+                        📋 Ver aportes
                       </button>
                       {goal.status === 'active' && (
                         <button
@@ -384,13 +401,13 @@ const Goals = () => {
                             setGoalToDelete(goal);
                             setDeleteConfirmModalOpen(true);
                           }}
-                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm text-red-600 flex items-center gap-2"
                         >
                           ❌ Cancelar meta
                         </button>
                       )}
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -498,7 +515,7 @@ const Goals = () => {
                 Monto objetivo <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 text-lg">
                   $
                 </div>
                 <input
@@ -506,7 +523,7 @@ const Goals = () => {
                   onChange={handleTargetAmountChange}
                   placeholder="0"
                   inputMode="numeric"
-                  className="block w-full rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-8 pr-4 py-2.5 text-base"
+                  className="block w-full rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-3.5 text-base"
                 />
               </div>
             </div>
@@ -755,11 +772,11 @@ const Goals = () => {
         <Modal
           isOpen={true}
           onClose={() => { setDeleteConfirmModalOpen(false); setGoalToDelete(null); }}
-          title="Cancelar Meta"
-          size="sm"
+          title="¿Cancelar meta?"
+          size="md"
         >
           <p className="text-gray-700 mb-6">
-            ¿Estás seguro de cancelar la meta "{goalToDelete.name}"? Esta acción no eliminará la meta pero la marcará como cancelada.
+            La meta "{goalToDelete.name}" será cancelada. Los aportes registrados se conservarán pero no podrás agregar nuevos aportes.
           </p>
           <div className="flex gap-3">
             <Button
@@ -786,7 +803,7 @@ const Goals = () => {
           isOpen={true}
           onClose={() => { setDeleteContributionConfirmOpen(false); setContributionToDelete(null); }}
           title="Eliminar Aporte"
-          size="sm"
+          size="md"
         >
           <p className="text-gray-700 mb-6">
             ¿Estás seguro de eliminar este aporte de {formatCurrency(contributionToDelete.amount)}?

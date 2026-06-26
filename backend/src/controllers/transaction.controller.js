@@ -1,9 +1,9 @@
 const { Op } = require('sequelize');
-const { Transaction, Category } = require('../models');
+const { Transaction, Category, GoalContribution, Goal } = require('../models');
 
 const getAll = async (req, res) => {
   try {
-    const { type, categoryId, startDate, endDate, month, year, page = 1, limit = 20, all } = req.query;
+    const { type, categoryId, startDate, endDate, month, year, page = 1, limit = 20, all, includeGoalContributions } = req.query;
     const isAdmin = req.user.role === 'admin' && all === 'true';
 
     const where = {};
@@ -17,21 +17,75 @@ const getAll = async (req, res) => {
     }
 
     const offset = (page - 1) * limit;
-    const { count, rows } = await Transaction.findAndCountAll({
-      where,
-      include: [{ model: Category, attributes: ['id', 'name', 'icon', 'color'] }],
-      order: [['date', 'DESC'], ['createdAt', 'DESC']],
-      limit: parseInt(limit),
-      offset: parseInt(offset)
-    });
+    let transactions = [];
+    let totalCount = 0;
+
+    if (includeGoalContributions === 'true') {
+      // Get regular transactions
+      const { count: txCount, rows: txRows } = await Transaction.findAndCountAll({
+        where,
+        include: [{ model: Category, attributes: ['id', 'name', 'icon', 'color'] }],
+        order: [['date', 'DESC'], ['createdAt', 'DESC']],
+      });
+
+      // Get goal contributions
+      const goalContribWhere = { userId: req.user.id };
+      if (startDate && endDate) {
+        goalContribWhere.date = { [Op.between]: [startDate, endDate] };
+      } else if (month && year) {
+        goalContribWhere.date = { [Op.startsWith]: `${year}-${String(month).padStart(2, '0')}` };
+      }
+
+      const contributions = await GoalContribution.findAll({
+        where: goalContribWhere,
+        include: [{ model: Goal, attributes: ['name', 'icon'] }],
+        order: [['date', 'DESC']],
+      });
+
+      // Convert contributions to transaction-like objects
+      const contributionTransactions = contributions.map(contrib => ({
+        id: `goal_contrib_${contrib.id}`,
+        description: `Aporte a meta: ${contrib.Goal?.name}`,
+        amount: contrib.amount,
+        type: 'expense',
+        date: contrib.date,
+        notes: contrib.notes,
+        Category: { name: 'Metas de Ahorro', color: '#6366f1', icon: '🎯' },
+        isGoalContribution: true,
+        goalName: contrib.Goal?.name,
+        goalIcon: contrib.Goal?.icon,
+        createdAt: contrib.createdAt,
+      }));
+
+      // Merge and sort
+      const allItems = [...txRows, ...contributionTransactions];
+      allItems.sort((a, b) => new Date(b.date) - new Date(a.date) || new Date(b.createdAt) - new Date(a.createdAt));
+
+      // Paginate
+      totalCount = allItems.length;
+      const start = (page - 1) * limit;
+      const end = start + limit;
+      transactions = allItems.slice(start, end);
+    } else {
+      const { count, rows } = await Transaction.findAndCountAll({
+        where,
+        include: [{ model: Category, attributes: ['id', 'name', 'icon', 'color'] }],
+        order: [['date', 'DESC'], ['createdAt', 'DESC']],
+        limit: parseInt(limit),
+        offset: parseInt(offset)
+      });
+      totalCount = count;
+      transactions = rows;
+    }
 
     res.json({
-      transactions: rows,
-      total: count,
+      transactions,
+      total: totalCount,
       page: parseInt(page),
-      totalPages: Math.ceil(count / limit)
+      totalPages: Math.ceil(totalCount / limit)
     });
   } catch (error) {
+    console.error('Error getting transactions:', error);
     res.status(500).json({ error: 'Error al obtener transacciones' });
   }
 };

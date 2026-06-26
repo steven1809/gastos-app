@@ -35,7 +35,7 @@ const Transactions = () => {
   const loadTransactions = async () => {
     try {
       setLoading(true);
-      const params = { ...filters, ...pagination, ...sortConfig };
+      const params = { ...filters, ...pagination, ...sortConfig, includeGoalContributions: true };
       const data = await transactionService.getAll(params);
       setTransactions(data.transactions || data);
       if (data.total) {
@@ -313,10 +313,16 @@ const Transactions = () => {
                   <div key={transaction.id} className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        {cat && (
-                          <span className="px-2 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: cat.color || '#6366f1' }}>
-                            {cat.name}
+                        {transaction.isGoalContribution ? (
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: '#6366f1' }}>
+                            🎯 Meta
                           </span>
+                        ) : (
+                          cat && (
+                            <span className="px-2 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: cat.color || '#6366f1' }}>
+                              {cat.name}
+                            </span>
+                          )
                         )}
                       </div>
                       <span className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
@@ -330,21 +336,26 @@ const Transactions = () => {
                       <div className="flex items-center gap-2 text-gray-500 text-sm">
                         <span>📅</span>
                         <span>{transaction.date}</span>
+                        {transaction.isGoalContribution && (
+                          <span className="text-xs text-gray-400 ml-2">(Aporte a meta · no editable)</span>
+                        )}
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditTransaction(transaction)}
-                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(transaction)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-                        >
-                          🗑️
-                        </button>
-                      </div>
+                      {!transaction.isGoalContribution && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditTransaction(transaction)}
+                            className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(transaction)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

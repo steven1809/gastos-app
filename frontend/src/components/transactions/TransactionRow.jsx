@@ -13,12 +13,21 @@ const TransactionRow = ({ transaction, onEdit, onDelete }) => {
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
         {transaction.description}
+        {transaction.isGoalContribution && (
+          <span className="text-xs text-gray-400 ml-2">(Aporte a meta · no editable)</span>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        {transaction.Category && (
-          <Badge color={transaction.Category.color}>
-            {transaction.Category.name}
+        {transaction.isGoalContribution ? (
+          <Badge color="#6366f1">
+            🎯 Meta
           </Badge>
+        ) : (
+          transaction.Category && (
+            <Badge color={transaction.Category.color}>
+              {transaction.Category.name}
+            </Badge>
+          )
         )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
@@ -38,18 +47,22 @@ const TransactionRow = ({ transaction, onEdit, onDelete }) => {
         </span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-        <button
-          onClick={() => onEdit(transaction)}
-          className="text-indigo-600 hover:text-indigo-800 p-1"
-        >
-          ✏️
-        </button>
-        <button
-          onClick={() => onDelete(transaction)}
-          className="text-red-600 hover:text-red-800 p-1"
-        >
-          🗑️
-        </button>
+        {!transaction.isGoalContribution && (
+          <>
+            <button
+              onClick={() => onEdit(transaction)}
+              className="text-indigo-600 hover:text-indigo-800 p-1"
+            >
+              ✏️
+            </button>
+            <button
+              onClick={() => onDelete(transaction)}
+              className="text-red-600 hover:text-red-800 p-1"
+            >
+              🗑️
+            </button>
+          </>
+        )}
       </td>
     </tr>
   );
