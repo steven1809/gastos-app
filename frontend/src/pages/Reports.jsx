@@ -46,7 +46,9 @@ const Reports = () => {
   const currentYear = now.getFullYear();
 
   const presets = [
-    { label: 'Este mes', getDates: () => {
+    { 
+      label: 'Este mes', 
+      getDates: () => {
         const firstDay = new Date(currentYear, currentMonth - 1, 1);
         const lastDay = new Date(currentYear, currentMonth, 0);
         return {
@@ -55,7 +57,9 @@ const Reports = () => {
         };
       }
     },
-    { label: 'Mes anterior', getDates: () => {
+    { 
+      label: 'Mes anterior', 
+      getDates: () => {
         const prevMonthDate = new Date(currentYear, currentMonth - 2, 1);
         const firstDay = new Date(prevMonthDate.getFullYear(), prevMonthDate.getMonth(), 1);
         const lastDay = new Date(prevMonthDate.getFullYear(), prevMonthDate.getMonth() + 1, 0);
@@ -65,7 +69,9 @@ const Reports = () => {
         };
       }
     },
-    { label: 'Últimos 3 meses', getDates: () => {
+    { 
+      label: 'Últimos 3 meses', 
+      getDates: () => {
         const threeMonthsAgo = new Date(now);
         threeMonthsAgo.setMonth(now.getMonth() - 3);
         const firstDay = new Date(threeMonthsAgo.getFullYear(), threeMonthsAgo.getMonth(), 1);
@@ -76,10 +82,13 @@ const Reports = () => {
         };
       }
     },
-    { label: 'Este año', getDates: () => ({
-      start: `${currentYear}-01-01`,
-      end: `${currentYear}-12-31`
-    })}
+    { 
+      label: 'Este año', 
+      getDates: () => ({
+        start: `${currentYear}-01-01`,
+        end: `${currentYear}-12-31`
+      })
+    }
   ];
 
   const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
@@ -240,23 +249,21 @@ const Reports = () => {
               <p className="text-sm text-red-700 font-medium">Total Gastos</p>
               <p className="text-3xl font-bold text-red-800 mt-2">{formatCurrency(reportData?.totalExpenses || 0)}</p>
             </Card>
-            <Card className={`bg-gradient-to-br ${
-              (reportData?.balance || 0) >= 0 ? 'from-indigo-50 to-indigo-100 border-indigo-200' : 'from-red-50 to-red-100 border-red-200'
-            } border`}>
+            <Card className={`bg-gradient-to-br ${(reportData?.balance || 0) >= 0 ? 'from-indigo-50 to-indigo-100 border-indigo-200' : 'from-red-50 to-red-100 border-red-200'} border`}>
               <p className="text-sm font-medium" style={{ color: (reportData?.balance || 0) >= 0 ? '#4f46e5' : '#b91c1c' }}>Balance</p>
               <p className="text-3xl font-bold mt-2" style={{ color: (reportData?.balance || 0) >= 0 ? '#4f46e5' : '#b91c1c' }}>{formatCurrency(reportData?.balance || 0)}</p>
             </Card>
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
               <p className="text-sm text-purple-700 font-medium">Tasa de Ahorro</p>
               <p className="text-3xl font-bold text-purple-800 mt-2">
-                {(reportData?.savingsRate || 0).toFixed(1) + '%'}
+                {(reportData?.savingsRate || 0).toFixed(1)}%
               </p>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Tendencia Mensual">
-              <div style={{ height: '200px', md: { height: '300px' }}>
+              <div style={{ height: '200px' }}>
                 <Line
                   data={chartData}
                   options={{
@@ -276,6 +283,7 @@ const Reports = () => {
                     scales: {
                       x: { grid: { display: false } },
                       y: { grid: { color: 'rgba(0,0,0,0.05)' } }
+                    }
                   }}
                 />
               </div>
