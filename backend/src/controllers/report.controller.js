@@ -1,7 +1,7 @@
 const { Op, Sequelize } = require('sequelize');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
-const { Transaction, Category } = require('../models');
+const { Transaction, Category, GoalContribution, Goal } = require('../models');
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(amount);
@@ -27,6 +27,7 @@ const getSummaryReport = async (req, res) => {
       finalEndDate = lastDay.toISOString().split('T')[0];
     }
 
+    // Obtener transacciones normales
     const transactions = await Transaction.findAll({
       where: {
         userId: req.user.id,
@@ -35,15 +36,30 @@ const getSummaryReport = async (req, res) => {
       include: [{ model: Category }]
     });
 
-    const totalIncome = transactions
+    // Obtener aportes a metas en el período del reporte
+    const goalContributionsReport = await GoalContribution.findAll({
+      include: [{ model: Goal }],
+      where: {
+        userId: req.user.id,
+        date: { [Op.between]: [finalStartDate, finalEndDate] }
+      }
+    });
+
+    let totalIncome = transactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-    const totalExpenses = transactions
+    let totalExpenses = transactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+    const totalGoalContributionsReport = goalContributionsReport.reduce(
+      (sum, c) => sum + parseFloat(c.amount), 0
+    );
+    totalExpenses += totalGoalContributionsReport;
     const balance = totalIncome - totalExpenses;
     const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
 
+    // Calcular categorías
     const expenseCategoriesMap = {};
     const incomeCategoriesMap = {};
     transactions.forEach(t => {
@@ -70,7 +86,7 @@ const getSummaryReport = async (req, res) => {
       }
     });
 
-    const topExpenseCategories = Object.values(expenseCategoriesMap)
+    let topExpenseCategories = Object.values(expenseCategoriesMap)
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5)
       .map(cat => ({
@@ -78,6 +94,20 @@ const getSummaryReport = async (req, res) => {
         percentage: totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0
       }));
     
+    // Agregar metas a topExpenseCategories
+    if (totalGoalContributionsReport > 0) {
+      topExpenseCategories.push({
+        name: 'Metas de Ahorro',
+        color: '#6366f1',
+        amount: totalGoalContributionsReport,
+        percentage: totalExpenses > 0 ? ((totalGoalContributionsReport / totalExpenses) * 100) : 0
+      });
+      topExpenseCategories.sort((a, b) => b.amount - a.amount);
+      if (topExpenseCategories.length > 5) {
+        topExpenseCategories = topExpenseCategories.slice(0, 5);
+      }
+    }
+
     const topIncomeCategories = Object.values(incomeCategoriesMap)
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5)
@@ -103,9 +133,28 @@ const getSummaryReport = async (req, res) => {
         },
         include: [{ model: Category }]
       });
+
+      // Obtener aportes a metas del mes
+      const monthGoalContributions = await GoalContribution.findAll({
+        where: {
+          userId: req.user.id,
+          [Op.and]: [
+            Sequelize.where(
+              Sequelize.fn('strftime', '%m', Sequelize.col('date')),
+              String(month).padStart(2, '0')
+            ),
+            Sequelize.where(
+              Sequelize.fn('strftime', '%Y', Sequelize.col('date')),
+              String(year)
+            )
+          ]
+        }
+      });
       
-      const income = monthTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
-      const expenses = monthTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+      let income = monthTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
+      let expenses = monthTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+      const goalContribMonth = monthGoalContributions.reduce((s, c) => s + parseFloat(c.amount), 0);
+      expenses += goalContribMonth;
       
       monthlyComparison.push({
         month: months[month - 1],

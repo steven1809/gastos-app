@@ -185,7 +185,7 @@ const getSummary = async (req, res) => {
     const now = new Date();
     const { month = now.getMonth() + 1, year = now.getFullYear() } = req.query;
 
-    // Use Sequelize.where with strftime for proper month/year filtering
+    // Obtener transacciones normales del mes
     const transactions = await Transaction.findAll({
       where: {
         userId: req.user.id,
@@ -197,13 +197,39 @@ const getSummary = async (req, res) => {
       include: [{ model: Category }]
     });
 
-    const totalIncome = transactions
+    // Obtener aportes a metas del mismo mes
+    const goalContributions = await GoalContribution.findAll({
+      include: [{ model: Goal }],
+      where: {
+        userId: req.user.id,
+        [Op.and]: [
+          Sequelize.where(
+            Sequelize.fn('strftime', '%m', Sequelize.col('date')),
+            String(month).padStart(2, '0')
+          ),
+          Sequelize.where(
+            Sequelize.fn('strftime', '%Y', Sequelize.col('date')),
+            String(year)
+          )
+        ]
+      }
+    });
+
+    let totalIncome = transactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-    const totalExpenses = transactions
+    let totalExpenses = transactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
+    // Sumar los aportes a metas a los gastos totales
+    const totalGoalContributions = goalContributions.reduce(
+      (sum, contrib) => sum + parseFloat(contrib.amount), 0
+    );
+    totalExpenses += totalGoalContributions;
+    const balance = totalIncome - totalExpenses;
+
+    // Calcular gastos por categoría
     const categoryMap = {};
     transactions.forEach(t => {
       if (t.type === 'expense' && t.Category) {
@@ -218,14 +244,38 @@ const getSummary = async (req, res) => {
       }
     });
 
-    const byCategory = Object.values(categoryMap).map(c => ({
+    let byCategory = Object.values(categoryMap).map(c => ({
       ...c,
       percentage: totalExpenses > 0 ? (c.amount / totalExpenses) * 100 : 0
     }));
 
+    // Agregar categoría virtual para metas
+    if (totalGoalContributions > 0) {
+      byCategory.push({
+        categoryName: 'Metas de Ahorro',
+        categoryColor: '#6366f1',
+        amount: totalGoalContributions,
+        percentage: totalExpenses > 0 
+          ? ((totalGoalContributions / totalExpenses) * 100).toFixed(1) 
+          : 0
+      });
+    }
+
+    // Calcular tendencia diaria (últimos 30 días)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+    
+    // Obtener transacciones de último 30 días
     const dailyTransactions = await Transaction.findAll({
+      where: {
+        userId: req.user.id,
+        date: { [Op.gte]: thirtyDaysAgo.toISOString().split('T')[0] }
+      },
+      order: [['date', 'ASC']]
+    });
+
+    // Obtener aportes de últimos 30 días
+    const dailyGoalContributions = await GoalContribution.findAll({
       where: {
         userId: req.user.id,
         date: { [Op.gte]: thirtyDaysAgo.toISOString().split('T')[0] }
@@ -240,6 +290,8 @@ const getSummary = async (req, res) => {
       const dateStr = d.toISOString().split('T')[0];
       dailyTrendMap[dateStr] = { date: dateStr, income: 0, expenses: 0 };
     }
+
+    // Agregar transacciones normales a la tendencia
     dailyTransactions.forEach(t => {
       const entry = dailyTrendMap[t.date];
       if (entry) {
@@ -247,12 +299,21 @@ const getSummary = async (req, res) => {
         else entry.expenses += parseFloat(t.amount);
       }
     });
+
+    // Agregar aportes a la tendencia
+    dailyGoalContributions.forEach(contrib => {
+      const entry = dailyTrendMap[contrib.date];
+      if (entry) {
+        entry.expenses += parseFloat(contrib.amount);
+      }
+    });
+
     const dailyTrend = Object.values(dailyTrendMap);
 
     res.json({
       totalIncome,
       totalExpenses,
-      balance: totalIncome - totalExpenses,
+      balance,
       byCategory,
       dailyTrend
     });
