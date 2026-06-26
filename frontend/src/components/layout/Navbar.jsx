@@ -13,6 +13,7 @@ const Navbar = () => {
     { path: '/', label: 'Dashboard' },
     { path: '/transactions', label: 'Transacciones' },
     { path: '/budgets', label: 'Presupuesto' },
+    { path: '/goals', label: '🎯 Metas' },
     { path: '/reports', label: 'Reportes' }
   ];
 
@@ -52,10 +53,11 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="relative">
+            {/* Desktop: Avatar + Dropdown */}
+            <div className="hidden md:flex relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 min-h-[44px]"
               >
                 <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold">
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -81,10 +83,10 @@ const Navbar = () => {
               )}
             </div>
 
+            {/* Mobile: Hamburger menu */}
             <button
-              className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-600 hover:text-gray-900"
+              className="md:hidden text-gray-600 hover:text-gray-900 min-h-[44px] p-2"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileMenuOpen ? (
@@ -98,25 +100,75 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile menu overlay and drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200">
-          <div className="px-4 py-3 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  location.pathname === link.path
-                    ? 'text-indigo-600 bg-indigo-50'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                }`}
+        <>
+          {/* Overlay */}
+          <div 
+            className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          
+          {/* Drawer */}
+          <div className="md:hidden fixed top-0 left-0 right-0 bg-white z-50 shadow-xl transform transition-transform duration-200">
+            <div className="px-4 py-3 flex justify-between items-center border-b border-gray-200">
+              <div className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                💰 GastosApp
+              </div>
+              <button
                 onClick={() => setMobileMenuOpen(false)}
+                className="text-gray-600 hover:text-gray-900 min-h-[44px] p-2"
               >
-                {link.label}
-              </Link>
-            ))}
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="px-4 py-3 space-y-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`block px-4 py-4 rounded-md text-base font-medium border-b border-gray-100 last:border-b-0 ${
+                    location.pathname === link.path
+                      ? 'text-indigo-600 bg-indigo-50'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              
+              {/* User profile and logout in mobile menu */}
+              <div className="pt-4 border-t border-gray-200 mt-4">
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-lg">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <div>
+                    <p className="text-gray-900 font-medium">{user?.name || user?.username}</p>
+                    <p className="text-gray-500 text-sm">{user?.email}</p>
+                  </div>
+                </div>
+                <Link
+                  to="/profile"
+                  className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Mi perfil
+                </Link>
+                <button
+                  onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                  className="w-full text-left px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </nav>
   );

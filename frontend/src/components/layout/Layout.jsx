@@ -16,18 +16,18 @@ const Layout = ({ children }) => {
         {isAdminRoute ? (
           <div className="flex">
             <Sidebar />
-            <div className="flex-1 p-6 lg:p-8">
+            <div className="flex-1 p-3 md:p-6 lg:p-8">
               {children}
             </div>
           </div>
         ) : (
-          <div className="p-6 lg:p-8">
+          <div className="p-3 md:p-6 lg:p-8">
             {children}
           </div>
         )}
       </main>
       
-      <Footer />
+      <Footer className="hidden md:block" />
     </div>
   );
 };

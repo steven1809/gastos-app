@@ -118,14 +118,11 @@ const Dashboard = () => {
   }, [month, year]);
 
   const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP'
+    style: 'currency',
+    currency: 'COP'
   }).format(amount);
 
-
-
   const getFixedExpenseStatus = (budget) => {
-    const today = currentDate.getDate();
-    const dueDay = budget.dueDay;
     const spent = budget.spent || 0;
     const total = budget.amount;
     const percentagePaid = (spent / total) * 100;
@@ -258,23 +255,23 @@ const Dashboard = () => {
   const dashboardSummary = getDashboardSummaryStatus();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Saludo - todo el ancho */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-6 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-4 md:p-6 text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
           {getGreeting()}, {user?.name || user?.username || 'usuario'}! 👋
         </h1>
-        <p className="text-gray-600 mt-2 text-lg">
+        <p className="text-gray-600 mt-2 text-base md:text-lg">
           Aquí tienes el resumen de tus finanzas para {currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
         </p>
       </div>
 
       {/* Selectores de mes/año - centrados */}
-      <div className="flex justify-center gap-3">
+      <div className="flex justify-center gap-2 md:gap-3">
         <select
           value={month}
           onChange={(e) => setMonth(parseInt(e.target.value))}
-          className="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500"
+          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
         >
           {months.map((m, idx) => (
             <option key={idx + 1} value={idx + 1}>{m}</option>
@@ -283,7 +280,7 @@ const Dashboard = () => {
         <select
           value={year}
           onChange={(e) => setYear(parseInt(e.target.value))}
-          className="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500"
+          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
         >
           {[2023, 2024, 2025, 2026].map(y => (
             <option key={y} value={y}>{y}</option>
@@ -292,43 +289,43 @@ const Dashboard = () => {
       </div>
 
       {/* Tarjetas de estadísticas */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-600 font-medium mb-1">Total Ingresos</p>
-              <p className="text-3xl font-bold text-green-700">{formatCurrency(summary?.totalIncome || 0)}</p>
+              <p className="text-green-600 font-medium mb-1 text-sm">Total Ingresos</p>
+              <p className="text-2xl md:text-3xl font-bold text-green-700">{formatCurrency(summary?.totalIncome || 0)}</p>
             </div>
-            <div className="bg-green-500 rounded-full p-3">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-green-500 rounded-full p-2 md:p-3">
+              <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200">
+        <Card className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-red-600 font-medium mb-1">Total Gastos</p>
-              <p className="text-3xl font-bold text-red-700">{formatCurrency(summary?.totalExpenses || 0)}</p>
+              <p className="text-red-600 font-medium mb-1 text-sm">Total Gastos</p>
+              <p className="text-2xl md:text-3xl font-bold text-red-700">{formatCurrency(summary?.totalExpenses || 0)}</p>
             </div>
-            <div className="bg-red-500 rounded-full p-3">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-red-500 rounded-full p-2 md:p-3">
+              <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
               </svg>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200">
+        <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-indigo-600 font-medium mb-1">Balance</p>
-              <p className={`text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700' : 'text-red-700'}`}>{formatCurrency(summary?.balance || 0)}</p>
+              <p className="text-indigo-600 font-medium mb-1 text-sm">Balance</p>
+              <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700' : 'text-red-700'}`}>{formatCurrency(summary?.balance || 0)}</p>
             </div>
-            <div className="bg-indigo-500 rounded-full p-3">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-indigo-500 rounded-full p-2 md:p-3">
+              <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -342,29 +339,29 @@ const Dashboard = () => {
               : dashboardSummary.totalPaid > 0 
                 ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-200' 
                 : 'bg-gradient-to-r from-red-50 to-red-100 border border-red-200'
-          }>
+          } p-4>
             <div className="flex items-center justify-between">
               <div>
-                <p className={`font-medium mb-1`} style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
+                <p className={`font-medium mb-1 text-sm`} style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
                   {dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? 'Todo pagado' : dashboardSummary.totalPaid > 0 ? 'Falta pagar' : 'Sin pagos'}
                 </p>
-                <p className="text-lg font-bold" style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
+                <p className="text-xl md:text-2xl font-bold" style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
                   {formatCurrency(dashboardSummary.totalPaid)} / {formatCurrency(dashboardSummary.totalBudgeted)}
                 </p>
                 {dashboardSummary.remaining > 0 && (
-                  <p className="text-sm font-semibold mt-1" style={{ color: dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
+                  <p className="text-xs md:text-sm font-semibold mt-1" style={{ color: dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1b' }}>
                     Falta: {formatCurrency(dashboardSummary.remaining)}
                   </p>
                 )}
               </div>
               <div className={
                 dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted 
-                  ? 'bg-green-500 rounded-full p-3' 
+                  ? 'bg-green-500 rounded-full p-2 md:p-3' 
                   : dashboardSummary.totalPaid > 0 
-                    ? 'bg-yellow-500 rounded-full p-3' 
-                    : 'bg-red-500 rounded-full p-3'
+                    ? 'bg-yellow-500 rounded-full p-2 md:p-3' 
+                    : 'bg-red-500 rounded-full p-2 md:p-3'
               }>
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -376,7 +373,7 @@ const Dashboard = () => {
       {/* Recordatorios - como cards individuales */}
       {fixedExpenses.length > 0 && (
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 Recordatorios</h2>
+          <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">📌 Recordatorios</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {fixedExpenses
               .sort((a, b) => a.dueDay - b.dueDay)
@@ -392,7 +389,7 @@ const Dashboard = () => {
                 };
                 
                 return (
-                  <Card key={budget.id} className={getCardBg()}>
+                  <Card key={budget.id} className={`${getCardBg()} p-4`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {cat && <Badge className="text-xs px-2 py-0.5">{cat.name}</Badge>}
@@ -400,7 +397,7 @@ const Dashboard = () => {
                           {status.icon} {status.text}
                         </span>
                       </div>
-                      <span className="text-lg font-bold text-gray-900">{formatCurrency(budget.amount)}</span>
+                      <span className="text-base md:text-lg font-bold text-gray-900">{formatCurrency(budget.amount)}</span>
                     </div>
                     
                     <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
@@ -414,7 +411,7 @@ const Dashboard = () => {
                       ></div>
                     </div>
                     
-                    <div className="flex justify-between text-sm text-gray-600 mb-3">
+                    <div className="flex justify-between text-xs md:text-sm text-gray-600 mb-3">
                       <span>Pagado: {formatCurrency(budget.spent || 0)}</span>
                       {percentagePaid < 100 && (
                         <span>Falta: {formatCurrency(status.remaining)}</span>
@@ -425,7 +422,7 @@ const Dashboard = () => {
                       <Button 
                         size="sm"
                         onClick={() => handlePayFixedExpense(budget)}
-                        className="w-full"
+                        className="w-full min-h-[44px]"
                       >
                         💳 Pagar
                       </Button>
@@ -444,49 +441,52 @@ const Dashboard = () => {
       )}
 
       {/* Gráficas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <Card title="Gastos por Categoría">
-          <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          <div style={{ maxWidth: '400px', margin: '0 auto', height: '200px', md: { height: '300px' } }}>
             <Doughnut data={doughnutData()} options={{
               responsive: true,
-              maintainAspectRatio: true,
-              plugins: { legend: { position: 'right' } }
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 8, font: { size: 11 } } } }
             }} />
           </div>
         </Card>
         <Card title="Ingresos vs Gastos - Últimos 6 Meses">
-          <Bar data={barData()} options={{
-            responsive: true,
-            plugins: { legend: { position: 'top' } }
-          }} />
+          <div style={{ height: '200px', md: { height: '300px' } }}>
+            <Bar data={barData()} options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 11 } } } }
+            }} />
+          </div>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card title="Transacciones Recientes" action={<Link to="/transactions" className="text-indigo-600 hover:text-indigo-800 font-medium">Ver todas →</Link>}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <Card title="Transacciones Recientes" action={<Link to="/transactions" className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Ver todas →</Link>}>
           <div className="space-y-3">
             {recentTransactions.map((tx) => (
               <div key={tx.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-500 w-24">{tx.date}</span>
-                  <Badge color={tx.Category?.color || '#6366f1'}>{tx.Category?.name}</Badge>
-                  <span className="text-gray-700">{tx.description}</span>
+                <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                  <span className="text-xs md:text-sm text-gray-500 w-16 md:w-24 flex-shrink-0">{tx.date}</span>
+                  <Badge color={tx.Category?.color || '#6366f1'} className="text-xs flex-shrink-0">{tx.Category?.name}</Badge>
+                  <span className="text-gray-700 text-xs md:text-sm truncate">{tx.description}</span>
                 </div>
-                <div>
-                  <span className={`font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="flex-shrink-0 ml-2">
+                  <span className={`font-semibold text-xs md:text-sm ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                     {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                   </span>
                 </div>
               </div>
             ))}
             {!recentTransactions?.length && (
-              <p className="text-gray-500 text-center py-8">No hay transacciones recientes</p>
+              <p className="text-gray-500 text-center py-8 text-sm">No hay transacciones recientes</p>
             )}
           </div>
         </Card>
 
         <Card title="Estado del Presupuesto">
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {budgetStatus?.budgets?.map((budget) => {
               const percentageUsed = Math.min(100, budget.percentage_used);
               const remaining = budget.amount - (budget.spent || 0);
@@ -516,11 +516,11 @@ const Dashboard = () => {
               };
               
               return (
-                <div key={budget.id} className={`p-4 rounded-lg border ${getStatusBg()}`}>
+                <div key={budget.id} className={`p-3 md:p-4 rounded-lg border ${getStatusBg()}`}>
                   <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center gap-2">
-                      <Badge color={budget.Category?.color || '#6366f1'}>{budget.Category?.name || 'General'}</Badge>
-                      <span className="text-sm font-semibold">{getStatusIcon()} {getStatusText()}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge color={budget.Category?.color || '#6366f1'} className="text-xs">{budget.Category?.name || 'General'}</Badge>
+                      <span className="text-xs md:text-sm font-semibold">{getStatusIcon()} {getStatusText()}</span>
                     </div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -529,7 +529,7 @@ const Dashboard = () => {
                       style={{ width: `${percentageUsed}%` }}
                     ></div>
                   </div>
-                  <div className="flex justify-between text-sm mt-2">
+                  <div className="flex justify-between text-xs md:text-sm mt-2">
                     <span className="text-gray-600">{formatCurrency(budget.spent || 0)} pagado</span>
                     <span className="font-medium text-gray-900">{formatCurrency(budget.amount)} total</span>
                   </div>
@@ -540,7 +540,7 @@ const Dashboard = () => {
               );
             })}
             {!budgetStatus?.budgets?.length && (
-              <p className="text-gray-500 text-center py-8">No hay presupuestos configurados</p>
+              <p className="text-gray-500 text-center py-8 text-sm">No hay presupuestos configurados</p>
             )}
           </div>
         </Card>

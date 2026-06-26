@@ -247,7 +247,8 @@ const Transactions = () => {
           <div className="flex justify-center py-12"><LoadingSpinner /></div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Desktop: Table view */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -292,7 +293,7 @@ const Transactions = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {transactions.map(transaction => (
+                  {transactions.map((transaction) => (
                     <TransactionRow
                       key={transaction.id}
                       transaction={transaction}
@@ -304,11 +305,58 @@ const Transactions = () => {
               </table>
             </div>
 
+            {/* Mobile: Card view */}
+            <div className="md:hidden space-y-3">
+              {transactions.map((transaction) => {
+                const cat = transaction.Category || categories.find(c => c.id === Number(transaction.categoryId));
+                return (
+                  <div key={transaction.id} className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {cat && (
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: cat.color || '#6366f1' }}>
+                            {cat.name}
+                          </span>
+                        )}
+                      </div>
+                      <span className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-800 font-medium mb-3">{transaction.description}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                        <span>📅</span>
+                        <span>{transaction.date}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditTransaction(transaction)}
+                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(transaction)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             {!loading && transactions.length === 0 && (
               <p className="text-center py-12 text-gray-500">No hay transacciones para mostrar</p>
             )}
 
-            <div className="px-6 py-4 border-t border-gray-200">
+            {/* Desktop Pagination */}
+            <div className="hidden md:block px-6 py-4 border-t border-gray-200">
               <div className="flex justify-between items-center">
                 <div className="flex gap-6">
                   <span className="text-green-700 font-semibold">
@@ -327,7 +375,7 @@ const Transactions = () => {
                       variant="secondary"
                       size="sm"
                       disabled={pagination.page <= 1}
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
                     >
                       Anterior
                     </Button>
@@ -335,12 +383,35 @@ const Transactions = () => {
                       variant="secondary"
                       size="sm"
                       disabled={pagination.page >= pagination.totalPages}
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
                     >
                       Siguiente
                     </Button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Mobile Pagination */}
+            <div className="md:hidden border-t border-gray-200 py-4 px-4 space-y-3">
+              <p className="text-center text-gray-600 font-medium">Página {pagination.page} de {pagination.totalPages || 1}</p>
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1 min-h-[44px]"
+                  disabled={pagination.page <= 1}
+                  onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="flex-1 min-h-[44px]"
+                  disabled={pagination.page >= pagination.totalPages}
+                  onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
+                >
+                  Siguiente
+                </Button>
               </div>
             </div>
           </>

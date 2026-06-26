@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
+import Goals from './pages/Goals';
 import Reports from './pages/Reports';
 import AdminPanel from './pages/AdminPanel';
 
@@ -33,6 +34,11 @@ const AppRoutes = () => {
         <Route path="/budgets" element={
           <PrivateRoute>
             <Layout><Budgets /></Layout>
+          </PrivateRoute>
+        } />
+        <Route path="/goals" element={
+          <PrivateRoute>
+            <Layout><Goals /></Layout>
           </PrivateRoute>
         } />
         <Route path="/reports" element={

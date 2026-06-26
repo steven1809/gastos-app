@@ -56,7 +56,7 @@ const Reports = () => {
       return {
         start: `${prevYear}-${String(prevMonth).padStart(2, '0')}-01`,
         end: `${prevYear}-${String(prevMonth).padStart(2, '0')}-31`
-      }
+      };
     } },
     { label: 'Últimos 3 meses', getDates: () => {
       const threeMonthsAgo = new Date(now);
@@ -64,7 +64,7 @@ const Reports = () => {
       return {
         start: `${threeMonthsAgo.getFullYear()}-${String(threeMonthsAgo.getMonth()+1).padStart(2, '0')}-01`,
         end: `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`
-      }
+      };
     } },
     { label: 'Este año', getDates: () => ({
       start: `${currentYear}-01-01`,
@@ -73,7 +73,8 @@ const Reports = () => {
   ];
 
   const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP'
+    style: 'currency',
+    currency: 'COP'
   }).format(amount);
 
   const loadReportData = async () => {
@@ -142,7 +143,7 @@ const Reports = () => {
     
     const totalAmount = reportData.topExpenseCategories.reduce((sum, c) => sum + c.amount, 0);
     
-    return reportData.topExpenseCategories.map(cat => ({
+    return reportData.topExpenseCategories.map((cat) => ({
       ...cat,
       percentage: totalAmount > 0 ? (cat.amount / totalAmount) * 100 : 0
     }));
@@ -160,11 +161,11 @@ const Reports = () => {
     }
     
     return {
-      labels: reportData.monthlyComparison.map(m => m.month.substring(0, 3)),
+      labels: reportData.monthlyComparison.map((m) => m.month.substring(0, 3)),
       datasets: [
         { 
           label: 'Ingresos', 
-          data: reportData.monthlyComparison.map(m => m.income), 
+          data: reportData.monthlyComparison.map((m) => m.income), 
           borderColor: '#22c55e', 
           backgroundColor: 'rgba(34,197,94,0.1)', 
           fill: true, 
@@ -172,7 +173,7 @@ const Reports = () => {
         },
         { 
           label: 'Gastos', 
-          data: reportData.monthlyComparison.map(m => m.expenses), 
+          data: reportData.monthlyComparison.map((m) => m.expenses), 
           borderColor: '#ef4444', 
           backgroundColor: 'rgba(239,68,68,0.1)', 
           fill: true, 
@@ -189,7 +190,8 @@ const Reports = () => {
     <div className="space-y-6">
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
-      <div className="flex justify-between items-center">
+      {/* Mobile: Title above, buttons below */}
+      <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
         <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
         <ExportButtons
           onExportExcel={handleExportExcel}
@@ -200,32 +202,40 @@ const Reports = () => {
       </div>
 
       <Card>
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex flex-wrap gap-2">
-            {presets.map(p => (
-              <Button
-                key={p.label}
-                variant="secondary"
-                size="sm"
-                onClick={() => setDateRange(p.getDates())}
-              >
-                {p.label}
-              </Button>
-            ))}
-          </div>
-          <div className="flex gap-3 items-center">
+        {/* Period buttons: 2x2 grid on mobile, flex wrap on desktop */}
+        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap mb-4">
+          {presets.map((p) => (
+            <Button
+              key={p.label}
+              variant="secondary"
+              size="sm"
+              onClick={() => setDateRange(p.getDates())}
+              className="min-h-[44px]"
+            >
+              {p.label}
+            </Button>
+          ))}
+        </div>
+        
+        {/* Date pickers: stack on mobile, horizontal on desktop */}
+        <div className="flex flex-col gap-2 md:flex-row md:gap-3 md:items-center">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-600">Desde</label>
             <input
               type="date"
               value={dateRange.start}
               onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="px-4 py-2 rounded-lg border border-gray-300"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-base min-h-[44px]"
             />
-            <span className="text-gray-500">a</span>
+          </div>
+          <span className="hidden md:inline text-gray-500 self-end pb-2">a</span>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-600">Hasta</label>
             <input
               type="date"
               value={dateRange.end}
               onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="px-4 py-2 rounded-lg border border-gray-300"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-base min-h-[44px]"
             />
           </div>
         </div>
@@ -262,29 +272,32 @@ const Reports = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Tendencia Mensual">
-              <Line
-                data={chartData}
-                options={{
-                  responsive: true,
-                  interaction: { intersect: false, mode: 'index' },
-                  plugins: {
-                    legend: { position: 'top' },
-                    tooltip: { callbacks: {
-                      label: function(ctx) {
-                        return `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`;
-                      }
-                    } }
-                  },
-                  scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: 'rgba(0,0,0,0.05)' } }
-                  }
-                }}
-              />
+              <div className="h-[200px] md:h-[300px]">
+                <Line
+                  data={chartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                      legend: { position: 'top' },
+                      tooltip: { callbacks: {
+                        label: function(ctx) {
+                          return `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`;
+                        }
+                      } }
+                    },
+                    scales: {
+                      x: { grid: { display: false } },
+                      y: { grid: { color: 'rgba(0,0,0,0.05)' } }
+                    }
+                  }}
+                />
+              </div>
             </Card>
             <Card title="Top Categorías de Gastos">
               <div className="space-y-4">
-                {expenseCategories.map(cat => (
+                {expenseCategories.map((cat) => (
                   <div key={cat.name} className="flex items-center gap-3">
                     <Badge className="min-w-[120px]">{cat.name}</Badge>
                     <div className="flex-1">
