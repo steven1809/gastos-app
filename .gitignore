@@ -1,0 +1,5 @@
+﻿node_modules/
+.env
+backend/database.sqlite
+frontend/dist
+frontend/android

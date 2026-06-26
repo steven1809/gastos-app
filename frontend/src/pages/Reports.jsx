@@ -1,0 +1,305 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import reportService from '../services/report.service';
+import transactionService from '../services/transaction.service';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
+import ExportButtons from '../components/common/ExportButtons';
+import ProgressBar from '../components/common/ProgressBar';
+import Badge from '../components/common/Badge';
+import Alert from '../components/common/Alert';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
+
+const Reports = () => {
+  const [loading, setLoading] = useState(true);
+  const [loadingExcel, setLoadingExcel] = useState(false);
+  const [loadingPDF, setLoadingPDF] = useState(false);
+  const [error, setError] = useState(null);
+  const [reportData, setReportData] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+
+  const presets = [
+    { label: 'Este mes', getDates: () => ({
+      start: `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`,
+      end: `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`
+    }) },
+    { label: 'Mes anterior', getDates: () => {
+      const prevMonth = currentMonth === 1 ? 12 : currentMonth -1;
+      const prevYear = currentMonth === 1 ? currentYear -1 : currentYear;
+      return {
+        start: `${prevYear}-${String(prevMonth).padStart(2, '0')}-01`,
+        end: `${prevYear}-${String(prevMonth).padStart(2, '0')}-31`
+      }
+    } },
+    { label: 'Últimos 3 meses', getDates: () => {
+      const threeMonthsAgo = new Date(now);
+      threeMonthsAgo.setMonth(now.getMonth() -3);
+      return {
+        start: `${threeMonthsAgo.getFullYear()}-${String(threeMonthsAgo.getMonth()+1).padStart(2, '0')}-01`,
+        end: `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`
+      }
+    } },
+    { label: 'Este año', getDates: () => ({
+      start: `${currentYear}-01-01`,
+      end: `${currentYear}-12-31`
+    }) }
+  ];
+
+  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
+    style: 'currency', currency: 'COP'
+  }).format(amount);
+
+  const loadReportData = async () => {
+    try {
+      setLoading(true);
+      const params = dateRange.start ? { startDate: dateRange.start, endDate: dateRange.end } : {};
+      const [reportRes, txRes] = await Promise.all([
+        reportService.getSummary(params),
+        transactionService.getAll(params)
+      ]);
+      
+      const transactionsData = txRes.transactions || txRes;
+      
+      setReportData(reportRes);
+      setTransactions(transactionsData);
+    } catch (err) {
+      console.error(err);
+      setError('Error al cargar reportes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const preset = presets[0];
+    const dates = preset.getDates();
+    setDateRange(dates);
+  }, []);
+
+  useEffect(() => {
+    if (dateRange.start && dateRange.end) {
+      loadReportData();
+    }
+  }, [dateRange]);
+
+  const handleExportExcel = async () => {
+    try {
+      setLoadingExcel(true);
+      await reportService.exportExcel({
+        startDate: dateRange.start,
+        endDate: dateRange.end
+      });
+    } catch (err) {
+      setError('Error al exportar Excel');
+    } finally {
+      setLoadingExcel(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      setLoadingPDF(true);
+      await reportService.exportPDF({
+        startDate: dateRange.start,
+        endDate: dateRange.end
+      });
+    } catch (err) {
+      setError('Error al exportar PDF');
+    } finally {
+      setLoadingPDF(false);
+    }
+  };
+
+  const getExpenseCategories = () => {
+    if (!reportData?.topExpenseCategories) return [];
+    
+    const totalAmount = reportData.topExpenseCategories.reduce((sum, c) => sum + c.amount, 0);
+    
+    return reportData.topExpenseCategories.map(cat => ({
+      ...cat,
+      percentage: totalAmount > 0 ? (cat.amount / totalAmount) * 100 : 0
+    }));
+  };
+
+  const getMonthlyComparisonData = () => {
+    if (!reportData?.monthlyComparison) {
+      return {
+        labels: ['Jun'],
+        datasets: [
+          { label: 'Ingresos', data: [0], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 },
+          { label: 'Gastos', data: [0], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4 }
+        ]
+      };
+    }
+    
+    return {
+      labels: reportData.monthlyComparison.map(m => m.month.substring(0, 3)),
+      datasets: [
+        { 
+          label: 'Ingresos', 
+          data: reportData.monthlyComparison.map(m => m.income), 
+          borderColor: '#22c55e', 
+          backgroundColor: 'rgba(34,197,94,0.1)', 
+          fill: true, 
+          tension: 0.4 
+        },
+        { 
+          label: 'Gastos', 
+          data: reportData.monthlyComparison.map(m => m.expenses), 
+          borderColor: '#ef4444', 
+          backgroundColor: 'rgba(239,68,68,0.1)', 
+          fill: true, 
+          tension: 0.4 
+        }
+      ]
+    };
+  };
+
+  const expenseCategories = getExpenseCategories();
+  const chartData = getMonthlyComparisonData();
+
+  return (
+    <div className="space-y-6">
+      {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
+
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
+        <ExportButtons
+          onExportExcel={handleExportExcel}
+          onExportPDF={handleExportPDF}
+          loadingExcel={loadingExcel}
+          loadingPDF={loadingPDF}
+        />
+      </div>
+
+      <Card>
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-wrap gap-2">
+            {presets.map(p => (
+              <Button
+                key={p.label}
+                variant="secondary"
+                size="sm"
+                onClick={() => setDateRange(p.getDates())}
+              >
+                {p.label}
+              </Button>
+            ))}
+          </div>
+          <div className="flex gap-3 items-center">
+            <input
+              type="date"
+              value={dateRange.start}
+              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+              className="px-4 py-2 rounded-lg border border-gray-300"
+            />
+            <span className="text-gray-500">a</span>
+            <input
+              type="date"
+              value={dateRange.end}
+              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+              className="px-4 py-2 rounded-lg border border-gray-300"
+            />
+          </div>
+        </div>
+      </Card>
+
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600">Cargando reportes...</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
+              <p className="text-sm text-green-700 font-medium">Total Ingresos</p>
+              <p className="text-3xl font-bold text-green-800 mt-2">{formatCurrency(reportData?.totalIncome || 0)}</p>
+            </Card>
+            <Card className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200">
+              <p className="text-sm text-red-700 font-medium">Total Gastos</p>
+              <p className="text-3xl font-bold text-red-800 mt-2">{formatCurrency(reportData?.totalExpenses || 0)}</p>
+            </Card>
+            <Card className={`bg-gradient-to-br ${
+              (reportData?.balance || 0) >= 0 ? 'from-indigo-50 to-indigo-100 border-indigo-200' : 'from-red-50 to-red-100 border-red-200'
+            } border`}>
+              <p className="text-sm font-medium" style={{ color: (reportData?.balance || 0) >= 0 ? '#4f46e5' : '#b91c1c' }}>Balance</p>
+              <p className="text-3xl font-bold mt-2" style={{ color: (reportData?.balance || 0) >= 0 ? '#4f46e5' : '#b91c1c' }}>{formatCurrency(reportData?.balance || 0)}</p>
+            </Card>
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
+              <p className="text-sm text-purple-700 font-medium">Tasa de Ahorro</p>
+              <p className="text-3xl font-bold text-purple-800 mt-2">
+                {((reportData?.savingsRate || 0)).toFixed(1)}%
+              </p>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card title="Tendencia Mensual">
+              <Line
+                data={chartData}
+                options={{
+                  responsive: true,
+                  interaction: { intersect: false, mode: 'index' },
+                  plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: {
+                      label: function(ctx) {
+                        return `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`;
+                      }
+                    } }
+                  },
+                  scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: 'rgba(0,0,0,0.05)' } }
+                  }
+                }}
+              />
+            </Card>
+            <Card title="Top Categorías de Gastos">
+              <div className="space-y-4">
+                {expenseCategories.map(cat => (
+                  <div key={cat.name} className="flex items-center gap-3">
+                    <Badge className="min-w-[120px]">{cat.name}</Badge>
+                    <div className="flex-1">
+                      <ProgressBar percentage={cat.percentage} />
+                    </div>
+                    <p className="font-semibold min-w-[100px] text-right">{formatCurrency(cat.amount)}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Reports;
