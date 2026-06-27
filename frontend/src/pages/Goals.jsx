@@ -5,6 +5,7 @@ import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
 import Alert from '../components/common/Alert';
 import Badge from '../components/common/Badge';
+import { useCurrency } from '../context/CurrencyContext';
 
 const formatNumber = (num) => {
   if (!num && num !== 0) return '';
@@ -34,6 +35,7 @@ const EMICONS = ['🎯', '✈️', '🏠', '🚗', '💻', '📱', '🎓', '💍
 const COLORS = ['#6366f1', '#22c55e', '#ef4444', '#f59e0b', '#14b8a6', '#ec4899'];
 
 const Goals = () => {
+  const { formatAmount } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -69,9 +71,7 @@ const Goals = () => {
   });
   const [contributionAmountDisplay, setContributionAmountDisplay] = useState('');
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP'
-  }).format(amount);
+
 
   const loadData = async () => {
     try {
@@ -292,7 +292,7 @@ const Goals = () => {
               <div className="text-3xl">💰</div>
               <div>
                 <p className="text-sm text-green-700 dark:text-green-300 font-medium">Total Ahorrado</p>
-                <p className="text-3xl font-bold text-green-900 dark:text-green-100">{formatCurrency(stats.totalSaved)}</p>
+                <p className="text-3xl font-bold text-green-900 dark:text-green-100">{formatAmount(stats.totalSaved)}</p>
               </div>
             </div>
           </Card>
@@ -418,7 +418,7 @@ const Goals = () => {
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {formatCurrency(goal.currentAmount)} de {formatCurrency(goal.targetAmount)}
+                    {formatAmount(goal.currentAmount)} de {formatAmount(goal.targetAmount)}
                   </span>
                   <span className="font-bold text-lg text-gray-900 dark:text-white">
                     {Math.round(goal.percentage)}%
@@ -450,7 +450,7 @@ const Goals = () => {
 
               {goal.status === 'active' && (
                 <p className="text-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-                  Falta: {formatCurrency(goal.remaining)}
+                  Falta: {formatAmount(goal.remaining)}
                 </p>
               )}
 
@@ -650,7 +650,7 @@ const Goals = () => {
                       </p>
                       {!willComplete ? (
                         <p className="text-center text-sm text-gray-600 dark:text-gray-300">
-                          Te faltará {formatCurrency(Number(selectedGoalForContribution.targetAmount) - projectedAmount)} para completarla
+                          Te faltará {formatAmount(Number(selectedGoalForContribution.targetAmount) - projectedAmount)} para completarla
                         </p>
                       ) : (
                         <p className="text-center text-lg font-bold text-green-700 dark:text-green-400">
@@ -731,7 +731,7 @@ const Goals = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-bold text-green-700 dark:text-green-400">+{formatCurrency(contribution.amount)}</span>
+                    <span className="font-bold text-green-700 dark:text-green-400">+{formatAmount(contribution.amount)}</span>
                     <button
                       onClick={() => {
                         setContributionToDelete(contribution);
@@ -750,7 +750,7 @@ const Goals = () => {
           {(selectedGoalForHistory.contributions || []).length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <p className="text-center font-medium text-gray-700 dark:text-gray-300">
-                Total aportado: <span className="text-green-700 dark:text-green-400 font-bold">{formatCurrency(selectedGoalForHistory.currentAmount)}</span>
+                Total aportado: <span className="text-green-700 dark:text-green-400 font-bold">{formatAmount(selectedGoalForHistory.currentAmount)}</span>
               </p>
             </div>
           )}
@@ -806,7 +806,7 @@ const Goals = () => {
           size="md"
         >
           <p className="text-gray-700 dark:text-gray-300 mb-6">
-            ¿Estás seguro de eliminar este aporte de {formatCurrency(contributionToDelete.amount)}?
+            ¿Estás seguro de eliminar este aporte de {formatAmount(contributionToDelete.amount)}?
           </p>
           <div className="flex gap-3">
             <Button

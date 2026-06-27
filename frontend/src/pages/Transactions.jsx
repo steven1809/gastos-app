@@ -10,8 +10,11 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import TransactionRow from '../components/transactions/TransactionRow';
 import TransactionForm from '../components/transactions/TransactionForm';
 
+import { useCurrency } from '../context/CurrencyContext';
+
 const Transactions = () => {
   const location = useLocation();
+  const { formatAmount } = useCurrency();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,9 +75,7 @@ const Transactions = () => {
     }
   }, [location]);
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP'
-  }).format(amount);
+
 
   const handleAddTransaction = () => {
     setPrefillData(null);
@@ -326,7 +327,7 @@ const Transactions = () => {
                         )}
                       </div>
                       <span className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                        {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
                       </span>
                     </div>
                     
@@ -371,10 +372,10 @@ const Transactions = () => {
               <div className="flex justify-between items-center">
                 <div className="flex gap-6">
                   <span className="text-green-700 dark:text-green-400 font-semibold">
-                    Ingresos: {formatCurrency(totalIncome)}
+                    Ingresos: {formatAmount(totalIncome)}
                   </span>
                   <span className="text-red-700 dark:text-red-400 font-semibold">
-                    Gastos: {formatCurrency(totalExpenses)}
+                    Gastos: {formatAmount(totalExpenses)}
                   </span>
                 </div>
                 <div className="flex items-center gap-4">

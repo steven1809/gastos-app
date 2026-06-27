@@ -17,6 +17,7 @@ import categoryService from '../services/category.service';
 import goalService from '../services/goal.service';
 import reportService from '../services/report.service';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import Card from '../components/common/Card';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
@@ -36,6 +37,7 @@ ChartJS.register(
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { formatAmount } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -99,10 +101,7 @@ const Dashboard = () => {
     loadData();
   }, [month, year]);
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP'
-  }).format(amount);
+
 
   const getFixedExpenseStatus = (budget) => {
     const spent = budget.spent || 0;
@@ -131,7 +130,7 @@ const Dashboard = () => {
     }
 
     return { 
-      text: `Falta ${formatCurrency(remaining)}`, 
+      text: `Falta ${formatAmount(remaining)}`, 
       color: 'bg-yellow-100 text-yellow-800', 
       icon: '💰',
       isPaid: false,
@@ -287,7 +286,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-700 dark:text-green-300 font-medium mb-1 text-sm">Total Ingresos</p>
-              <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{formatCurrency(summary?.totalIncome || 0)}</p>
+              <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{formatAmount(summary?.totalIncome || 0)}</p>
             </div>
             <div className="bg-green-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,7 +300,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-red-700 dark:text-red-300 font-medium mb-1 text-sm">Total Gastos</p>
-              <p className="text-2xl md:text-3xl font-bold text-red-800 dark:text-red-200">{formatCurrency(summary?.totalExpenses || 0)}</p>
+              <p className="text-2xl md:text-3xl font-bold text-red-800 dark:text-red-200">{formatAmount(summary?.totalExpenses || 0)}</p>
             </div>
             <div className="bg-red-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +314,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-indigo-700 dark:text-indigo-300 font-medium mb-1 text-sm">Balance</p>
-              <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>{formatCurrency(summary?.balance || 0)}</p>
+              <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>{formatAmount(summary?.balance || 0)}</p>
             </div>
             <div className="bg-indigo-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,11 +338,11 @@ const Dashboard = () => {
                   {dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? 'Todo pagado' : dashboardSummary.totalPaid > 0 ? 'Falta pagar' : 'Sin pagos'}
                 </p>
                 <p className="text-xl md:text-2xl font-bold" style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
-                  {formatCurrency(dashboardSummary.totalPaid)} / {formatCurrency(dashboardSummary.totalBudgeted)}
+                  {formatAmount(dashboardSummary.totalPaid)} / {formatAmount(dashboardSummary.totalBudgeted)}
                 </p>
                 {dashboardSummary.remaining > 0 && (
                   <p className="text-xs md:text-sm font-semibold mt-1" style={{ color: dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
-                    Falta: {formatCurrency(dashboardSummary.remaining)}
+                    Falta: {formatAmount(dashboardSummary.remaining)}
                   </p>
                 )}
               </div>
@@ -393,8 +392,8 @@ const Dashboard = () => {
                   </div>
                   
                   <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <span>{formatCurrency(goal.currentAmount || 0)} guardados</span>
-                    <span>{formatCurrency(goal.targetAmount)} objetivo</span>
+                    <span>{formatAmount(goal.currentAmount || 0)} guardados</span>
+                    <span>{formatAmount(goal.targetAmount)} objetivo</span>
                   </div>
                 </Card>
               );
@@ -439,7 +438,7 @@ const Dashboard = () => {
                           {status.icon} {status.text}
                         </span>
                       </div>
-                      <span className="text-base md:text-lg font-bold text-gray-900">{formatCurrency(budget.amount)}</span>
+                      <span className="text-base md:text-lg font-bold text-gray-900">{formatAmount(budget.amount)}</span>
                     </div>
                     
                     <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
@@ -454,9 +453,9 @@ const Dashboard = () => {
                     </div>
                     
                     <div className="flex justify-between text-xs md:text-sm text-gray-600 mb-3">
-                      <span>Pagado: {formatCurrency(budget.spent || 0)}</span>
+                      <span>Pagado: {formatAmount(budget.spent || 0)}</span>
                       {percentagePaid < 100 && (
-                        <span>Falta: {formatCurrency(status.remaining)}</span>
+                        <span>Falta: {formatAmount(status.remaining)}</span>
                       )}
                     </div>
                     
@@ -520,7 +519,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex-shrink-0 ml-2">
                   <span className={`font-semibold text-xs md:text-sm ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                    {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                    {tx.type === 'income' ? '+' : '-'}{formatAmount(tx.amount)}
                   </span>
                 </div>
               </div>
@@ -552,7 +551,7 @@ const Dashboard = () => {
               const getStatusText = () => {
                 if (percentageUsed >= 100) return 'Pagado';
                 if (percentageUsed === 0) return 'Sin pagar';
-                return `Falta ${formatCurrency(remaining)}`;
+                return `Falta ${formatAmount(remaining)}`;
               };
               
               const getProgressColor = () => {
@@ -576,11 +575,11 @@ const Dashboard = () => {
                     ></div>
                   </div>
                   <div className="flex justify-between text-xs md:text-sm mt-2">
-                    <span className="text-gray-600">{formatCurrency(budget.spent || 0)} pagado</span>
-                    <span className="font-medium text-gray-900">{formatCurrency(budget.amount)} total</span>
+                    <span className="text-gray-600">{formatAmount(budget.spent || 0)} pagado</span>
+                    <span className="font-medium text-gray-900">{formatAmount(budget.amount)} total</span>
                   </div>
                   {percentageUsed < 100 && (
-                    <p className="text-right text-xs text-gray-500 mt-1">Falta: {formatCurrency(remaining)}</p>
+                    <p className="text-right text-xs text-gray-500 mt-1">Falta: {formatAmount(remaining)}</p>
                   )}
                 </div>
               );

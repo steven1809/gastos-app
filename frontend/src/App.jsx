@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import Layout from './components/layout/Layout';
 import PrivateRoute from './components/layout/PrivateRoute';
 import AdminRoute from './components/layout/AdminRoute';
@@ -13,6 +14,7 @@ import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
 import Reports from './pages/Reports';
 import AdminPanel from './pages/AdminPanel';
+import Profile from './pages/Profile';
 
 const AppRoutes = () => {
   const { token } = useAuth();
@@ -52,6 +54,11 @@ const AppRoutes = () => {
             <Layout><AdminPanel /></Layout>
           </AdminRoute>
         } />
+        <Route path="/profile" element={
+          <PrivateRoute>
+            <Layout><Profile /></Layout>
+          </PrivateRoute>
+        } />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       
@@ -65,7 +72,9 @@ function App() {
     <Router>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
+          <CurrencyProvider>
+            <AppRoutes />
+          </CurrencyProvider>
         </AuthProvider>
       </ThemeProvider>
     </Router>

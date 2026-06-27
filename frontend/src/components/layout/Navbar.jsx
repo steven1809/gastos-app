@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import CurrencySelector from '../common/CurrencySelector';
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -55,6 +56,11 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Currency Selector */}
+            <div className="hidden md:block">
+              <CurrencySelector />
+            </div>
+            
             {/* Theme toggle */}
             <button
               onClick={(e) => {

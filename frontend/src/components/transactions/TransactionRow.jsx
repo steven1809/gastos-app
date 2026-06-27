@@ -1,10 +1,9 @@
 import React from 'react';
 import Badge from '../common/Badge';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const TransactionRow = ({ transaction, onEdit, onDelete }) => {
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP'
-  }).format(amount);
+  const { formatAmount } = useCurrency();
 
   return (
     <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -43,7 +42,7 @@ const TransactionRow = ({ transaction, onEdit, onDelete }) => {
         <span className={`font-semibold ${
           transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
         }`}>
-          {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+          {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
         </span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">

@@ -13,6 +13,7 @@ import ProgressBar from '../components/common/ProgressBar';
 import MonthPicker from '../components/common/MonthPicker';
 import CategorySelect from '../components/common/CategorySelect';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const formatNumber = (num) => {
   if (!num && num !== 0) return '';
@@ -32,6 +33,7 @@ const getMonthName = (month) => {
 
 const Budgets = () => {
   const { user } = useAuth();
+  const { formatAmount } = useCurrency();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,9 +61,7 @@ const Budgets = () => {
   });
   const [displayAmount, setDisplayAmount] = useState('');
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP'
-  }).format(amount);
+
 
   const loadData = async () => {
     try {
@@ -259,7 +259,7 @@ const Budgets = () => {
     } else if (anyPaid) {
       // Algunos pagos, pero falta algo
       return { 
-        text: `💰 Falta ${formatCurrency(remaining)}`, 
+        text: `💰 Falta ${formatAmount(remaining)}`, 
         icon: '💰', 
         bg: 'bg-yellow-100 dark:bg-yellow-900/30',
         totalPaid,
@@ -306,7 +306,7 @@ const Budgets = () => {
     }
 
     return { 
-      text: `Falta ${formatCurrency(remaining)}`, 
+      text: `Falta ${formatAmount(remaining)}`, 
       color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300', 
       icon: '💰',
       isPaid: false,
@@ -341,12 +341,12 @@ const Budgets = () => {
             <div>
               <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Resumen del mes</h2>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                {formatCurrency(overallStatus.totalPaid)} pagado de {formatCurrency(overallStatus.totalBudgeted)}
+                {formatAmount(overallStatus.totalPaid)} pagado de {formatAmount(overallStatus.totalBudgeted)}
               </p>
               <p className="text-2xl font-bold mt-2">{overallStatus.text}</p>
               {overallStatus.remaining > 0 && (
                 <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 mt-1">
-                  Falta: {formatCurrency(overallStatus.remaining)}
+                  Falta: {formatAmount(overallStatus.remaining)}
                 </p>
               )}
             </div>
@@ -378,7 +378,7 @@ const Budgets = () => {
               <Card key={budget.id} className={isExceeded ? 'border-2 border-red-300 dark:border-red-700' : ''}>
                 {isExceeded && (
                   <div className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
-                    ¡Presupuesto excedido por {formatCurrency(budget.spent - budget.amount)}!
+                    ¡Presupuesto excedido por {formatAmount(budget.spent - budget.amount)}!
                   </div>
                 )}
             <div className="flex items-center justify-between mb-4">
@@ -434,11 +434,11 @@ const Budgets = () => {
                       ></div>
                     </div>
                     <p className="text-center text-gray-700 dark:text-gray-300 text-sm">
-                      {formatCurrency(budget.spent)} pagado de {formatCurrency(budget.amount)}
+                      {formatAmount(budget.spent)} pagado de {formatAmount(budget.amount)}
                     </p>
                     {budget.percentage_used < 100 && (
                       <p className="text-center text-gray-500 dark:text-gray-400 text-xs">
-                        Falta: {formatCurrency(fixedStatus?.remaining || 0)}
+                        Falta: {formatAmount(fixedStatus?.remaining || 0)}
                       </p>
                     )}
                     <Button 
@@ -458,7 +458,7 @@ const Budgets = () => {
                     </div>
                     <ProgressBar percentage={budget.percentage_used} height="h-4" />
                     <p className="text-center mt-3 text-gray-700 dark:text-gray-300">
-                      {formatCurrency(budget.spent)} gastado de {formatCurrency(budget.amount)}
+                      {formatAmount(budget.spent)} gastado de {formatAmount(budget.amount)}
                     </p>
                   </div>
                 )}
@@ -606,7 +606,7 @@ const Budgets = () => {
                   ¿Estás seguro de eliminar el presupuesto de {categoryName} para {getMonthName(budgetToDelete.month)} {budgetToDelete.year}?
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                  Límite: {formatCurrency(budgetToDelete.amount)}
+                  Límite: {formatAmount(budgetToDelete.amount)}
                 </p>
                 
                 <hr className="border-gray-200 dark:border-gray-700 my-4" />
