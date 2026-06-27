@@ -317,15 +317,15 @@ const Budgets = () => {
   const overallStatus = getOverallStatus();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
       {successMessage && (
         <Alert type="success" message={successMessage} onClose={() => setSuccessMessage(null)} />
       )}
 
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Presupuestos</h1>
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center flex-wrap">
           <MonthPicker
             month={selectedMonth}
             year={selectedYear}
@@ -477,6 +477,14 @@ const Budgets = () => {
         </Card>
       )}
 
+      {/* Floating button for mobile */}
+      <button
+        onClick={() => setModalOpen(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-xl flex items-center justify-center text-3xl z-40 active:scale-95 transition-transform md:hidden"
+      >
+        +
+      </button>
+
       {modalOpen && (
         <Modal
           isOpen={true}
@@ -484,7 +492,7 @@ const Budgets = () => {
           title={editingBudget ? 'Editar Presupuesto' : 'Nuevo Presupuesto'}
           size="md"
         >
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Categoría <span className="text-red-500">*</span>
@@ -497,7 +505,7 @@ const Budgets = () => {
                 disabled={!!editingBudget}
               />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Mes de inicio <span className="text-red-500">*</span>
@@ -602,7 +610,7 @@ const Budgets = () => {
             
             return (
               <>
-                <p className="text-gray-700 dark:text-gray-300 mb-2">
+                <p className="text-gray-700 dark:text-gray-300 mb-2 text-sm break-words">
                   ¿Estás seguro de eliminar el presupuesto de {categoryName} para {getMonthName(budgetToDelete.month)} {budgetToDelete.year}?
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
@@ -612,18 +620,18 @@ const Budgets = () => {
                 <hr className="border-gray-200 dark:border-gray-700 my-4" />
                 
                 <div className={`${deleteFromHere ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700' : 'bg-transparent border-transparent'} border rounded-lg p-3 transition-all duration-200`}>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       id="deleteFromHere"
                       checked={deleteFromHere}
                       onChange={(e) => setDeleteFromHere(e.target.checked)}
                       disabled={isDecember}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 cursor-pointer disabled:opacity-50 bg-white dark:bg-gray-800"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 cursor-pointer disabled:opacity-50 bg-white dark:bg-gray-800 mt-0.5"
                     />
                     <label 
                       htmlFor="deleteFromHere" 
-                      className={`text-sm font-medium cursor-pointer ${isDecember ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}
+                      className={`text-sm font-medium cursor-pointer flex-1 ${isDecember ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}
                     >
                       Eliminar también en los meses restantes del año
                     </label>
@@ -644,7 +652,7 @@ const Budgets = () => {
                   )}
                 </div>
                 
-                <div className="flex gap-3 mt-6">
+                <div className="flex gap-3 mt-6 w-full">
                   <Button
                     variant="secondary"
                     className="flex-1"
