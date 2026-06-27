@@ -75,6 +75,7 @@ const Profile = () => {
 
       {/* Currency Preferences */}
       <Card title="Moneda Preferida">
+        <p className="text-gray-600 dark:text-gray-400">Selecciona tu moneda preferida : </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {currencies.map(({ code, flag, name }) => (
             <button
