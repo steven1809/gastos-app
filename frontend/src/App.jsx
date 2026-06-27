@@ -15,6 +15,7 @@ import Goals from './pages/Goals';
 import Reports from './pages/Reports';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 const AppRoutes = () => {
   const { token } = useAuth();
@@ -57,6 +58,11 @@ const AppRoutes = () => {
         <Route path="/profile" element={
           <PrivateRoute>
             <Layout><Profile /></Layout>
+          </PrivateRoute>
+        } />
+        <Route path="/settings" element={
+          <PrivateRoute>
+            <Layout><Settings /></Layout>
           </PrivateRoute>
         } />
         <Route path="*" element={<Navigate to="/" />} />

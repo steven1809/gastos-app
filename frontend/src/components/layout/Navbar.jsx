@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
-import CurrencySelector from '../common/CurrencySelector';
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,7 +14,8 @@ const Navbar = () => {
     { path: '/transactions', label: 'Dia a dia' },
     { path: '/budgets', label: 'Gastos Fijos' },
     { path: '/goals', label: 'Metas' },
-    { path: '/reports', label: 'Reportes' }
+    { path: '/reports', label: 'Reportes' },
+    { path: '/settings', label: 'Configuración' }
   ];
 
   if (isAdmin()) {
@@ -56,32 +54,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Currency Selector */}
-            <div className="hidden md:block">
-              <CurrencySelector />
-            </div>
-            
-            {/* Theme toggle */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Desktop theme toggle clicked');
-                toggleTheme();
-              }}
-              className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
-            </button>
-
             {/* Desktop: Avatar + Dropdown */}
             <div className="hidden md:flex relative">
               <button
@@ -101,6 +73,13 @@ const Navbar = () => {
                     onClick={() => setDropdownOpen(false)}
                   >
                     Mi perfil
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    Configuración
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -154,6 +133,7 @@ const Navbar = () => {
               </button>
             </div>
             
+            
             <div className="px-4 py-3 space-y-1">
               {navLinks.map((link) => (
                 <Link
@@ -170,43 +150,8 @@ const Navbar = () => {
                 </Link>
               ))}
               
-              {/* Theme toggle in mobile menu */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log('Mobile theme toggle clicked');
-                  toggleTheme();
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800"
-              >
-                {theme === 'dark' ? (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    Modo claro
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
-                    Modo oscuro
-                  </>
-                )}
-              </button>
-              
               {/* User profile and logout in mobile menu */}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-800 mt-4">
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-lg">
-                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <div>
-                    <p className="text-gray-900 dark:text-white font-medium">{user?.name || user?.username}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{user?.email}</p>
-                  </div>
-                </div>
                 <Link
                   to="/profile"
                   className="block px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-800"
@@ -220,6 +165,15 @@ const Navbar = () => {
                 >
                   Cerrar sesión
                 </button>
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-lg">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <div>
+                    <p className="text-gray-900 dark:text-white font-medium">{user?.name || user?.username}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">{user?.email}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
