@@ -13,10 +13,10 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navLinks = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/transactions', label: 'Transacciones' },
-    { path: '/budgets', label: 'Presupuesto' },
-    { path: '/goals', label: '🎯 Metas' },
+    { path: '/', label: 'Inicio' },
+    { path: '/transactions', label: 'Dia a dia' },
+    { path: '/budgets', label: 'Gastos Fijos' },
+    { path: '/goals', label: 'Metas' },
     { path: '/reports', label: 'Reportes' }
   ];
 

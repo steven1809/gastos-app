@@ -10,10 +10,12 @@ export const CurrencyProvider = ({ children }) => {
 
   const loadUserCurrency = async () => {
     try {
+      const token = localStorage.getItem('token')
+      if (!token) return
       const data = await currencyService.getUserCurrency()
-      setCurrency(data.currency)
+      setCurrency(data.currency || 'COP')
     } catch (error) {
-      console.error('Error loading user currency:', error)
+      setCurrency('COP') // default sin redirigir
     }
   }
 
@@ -22,7 +24,8 @@ export const CurrencyProvider = ({ children }) => {
       const data = await currencyService.getRates()
       setRates(data.rates)
     } catch (error) {
-      console.error('Error loading rates:', error)
+      // usar tasas aproximadas como fallback
+      setRates({ COP: 1, USD: 0.00024, EUR: 0.00022 })
     }
   }
 
@@ -68,8 +71,31 @@ export const CurrencyProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return // ← no llamar API sin token
     loadUserCurrency()
     loadRates()
+  }, [])
+
+  // Escuchar cambios en localStorage para cuando el usuario inicia/cierra sesión
+  useEffect(() => {
+    const handleStorage = () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        loadUserCurrency()
+        loadRates()
+      } else {
+        setCurrency('COP')
+        setRates({ COP: 1, USD: 0.00024, EUR: 0.00022 })
+      }
+    }
+    
+    window.addEventListener('storage', handleStorage)
+    
+    // También verificar cuando el componente se monte
+    handleStorage()
+
+    return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
   return (

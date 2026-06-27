@@ -112,6 +112,7 @@ const TransactionForm = ({ initialData, prefillData, onSubmit, onCancel, loading
     >
       <div className={`-mx-6 -mt-4 -mb-6 p-6 rounded-t-xl ${getModalHeaderColor()}`}></div>
       <form onSubmit={handleSubmit} className="space-y-4 pt-6">
+        <p className="text-sm font-medium text-gray-700 mb-1">Selecciona que tipo de transacción vas hacer :</p>
         <div className="flex gap-4">
           <button
             type="button"

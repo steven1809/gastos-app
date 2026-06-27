@@ -155,7 +155,7 @@ const Transactions = () => {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transacciones</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Transacciones</h1>
         <Button onClick={handleAddTransaction}>+ Nueva Transacción</Button>
       </div>
 

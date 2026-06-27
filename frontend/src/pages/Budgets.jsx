@@ -324,7 +324,7 @@ const Budgets = () => {
       )}
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Presupuestos</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Gastos Fijos</h1>
         <div className="flex gap-3 items-center flex-wrap">
           <MonthPicker
             month={selectedMonth}

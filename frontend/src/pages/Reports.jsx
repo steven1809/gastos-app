@@ -187,7 +187,7 @@ const Reports = () => {
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
       <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reportes</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Reportes</h1>
         <ExportButtons
           onExportExcel={handleExportExcel}
           onExportPDF={handleExportPDF}
