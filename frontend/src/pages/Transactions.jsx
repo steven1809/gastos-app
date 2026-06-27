@@ -154,32 +154,32 @@ const Transactions = () => {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Transacciones</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transacciones</h1>
         <Button onClick={handleAddTransaction}>+ Nueva Transacción</Button>
       </div>
 
       <div className="flex gap-3 flex-wrap">
         <button
           onClick={() => setFilters({ ...filters, type: '' })}
-          className={`px-4 py-2 rounded-lg border ${!filters.type ? 'bg-indigo-100 border-indigo-500 text-indigo-700' : 'border-gray-300 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg border transition-colors ${!filters.type ? 'bg-indigo-100 dark:bg-indigo-900/30 border-indigo-500 text-indigo-700 dark:text-indigo-300' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
         >
           Todos
         </button>
         <button
           onClick={() => setFilters({ ...filters, type: 'income' })}
-          className={`px-4 py-2 rounded-lg border ${filters.type === 'income' ? 'bg-green-100 border-green-500 text-green-700' : 'border-gray-300 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg border transition-colors ${filters.type === 'income' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700 dark:text-green-300' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
         >
           Ingresos
         </button>
         <button
           onClick={() => setFilters({ ...filters, type: 'expense' })}
-          className={`px-4 py-2 rounded-lg border ${filters.type === 'expense' ? 'bg-red-100 border-red-500 text-red-700' : 'border-gray-300 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg border transition-colors ${filters.type === 'expense' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 text-red-700 dark:text-red-300' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
         >
           Gastos
         </button>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         >
           🔍 Filtros
         </button>
@@ -189,11 +189,11 @@ const Transactions = () => {
         <Card>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
               <select
                 value={filters.categoryId}
                 onChange={(e) => setFilters({ ...filters, categoryId: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Todas</option>
                 {categories.map(cat => (
@@ -202,39 +202,39 @@ const Transactions = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha desde</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha desde</label>
               <input
                 type="date"
                 value={filters.startDate}
                 onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha hasta</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha hasta</label>
               <input
                 type="date"
                 value={filters.endDate}
                 onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Monto mínimo</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto mínimo</label>
               <input
                 type="number"
                 value={filters.minAmount}
                 onChange={(e) => setFilters({ ...filters, minAmount: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Monto máximo</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto máximo</label>
               <input
                 type="number"
                 value={filters.maxAmount}
                 onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -249,50 +249,50 @@ const Transactions = () => {
           <>
             {/* Desktop: Table view */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('date')}
                     >
                       Fecha {sortConfig.field === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase"
+                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Descripción
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase"
+                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Categoría
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase"
+                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Tipo
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('amount')}
                     >
                       Monto {sortConfig.field === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase"
+                      className="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                   {transactions.map((transaction) => (
                     <TransactionRow
                       key={transaction.id}
@@ -310,7 +310,7 @@ const Transactions = () => {
               {transactions.map((transaction) => {
                 const cat = transaction.Category || categories.find(c => c.id === Number(transaction.categoryId));
                 return (
-                  <div key={transaction.id} className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+                  <div key={transaction.id} className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {transaction.isGoalContribution ? (
@@ -325,32 +325,32 @@ const Transactions = () => {
                           )
                         )}
                       </div>
-                      <span className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                       </span>
                     </div>
                     
-                    <p className="text-gray-800 font-medium mb-3">{transaction.description}</p>
+                    <p className="text-gray-800 dark:text-white font-medium mb-3">{transaction.description}</p>
                     
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
                         <span>📅</span>
                         <span>{transaction.date}</span>
                         {transaction.isGoalContribution && (
-                          <span className="text-xs text-gray-400 ml-2">(Aporte a meta · no editable)</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">(Aporte a meta · no editable)</span>
                         )}
                       </div>
                       {!transaction.isGoalContribution && (
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEditTransaction(transaction)}
-                            className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                            className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
                           >
                             ✏️
                           </button>
                           <button
                             onClick={() => handleDeleteClick(transaction)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
                           >
                             🗑️
                           </button>
@@ -363,22 +363,22 @@ const Transactions = () => {
             </div>
 
             {!loading && transactions.length === 0 && (
-              <p className="text-center py-12 text-gray-500">No hay transacciones para mostrar</p>
+              <p className="text-center py-12 text-gray-500 dark:text-gray-400">No hay transacciones para mostrar</p>
             )}
 
             {/* Desktop Pagination */}
-            <div className="hidden md:block px-6 py-4 border-t border-gray-200">
+            <div className="hidden md:block px-6 py-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center">
                 <div className="flex gap-6">
-                  <span className="text-green-700 font-semibold">
+                  <span className="text-green-700 dark:text-green-400 font-semibold">
                     Ingresos: {formatCurrency(totalIncome)}
                   </span>
-                  <span className="text-red-700 font-semibold">
+                  <span className="text-red-700 dark:text-red-400 font-semibold">
                     Gastos: {formatCurrency(totalExpenses)}
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     Mostrando {(pagination.page - 1)*pagination.limit + 1}-{Math.min(pagination.page*pagination.limit, pagination.total || transactions.length)} de {pagination.total || transactions.length}
                   </span>
                   <div className="flex gap-2">
@@ -404,8 +404,8 @@ const Transactions = () => {
             </div>
 
             {/* Mobile Pagination */}
-            <div className="md:hidden border-t border-gray-200 py-4 px-4 space-y-3">
-              <p className="text-center text-gray-600 font-medium">Página {pagination.page} de {pagination.totalPages || 1}</p>
+            <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 px-4 space-y-3">
+              <p className="text-center text-gray-600 dark:text-gray-300 font-medium">Página {pagination.page} de {pagination.totalPages || 1}</p>
               <div className="flex gap-3">
                 <Button
                   variant="secondary"

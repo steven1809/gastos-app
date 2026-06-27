@@ -7,14 +7,14 @@ const TransactionRow = ({ transaction, onEdit, onDelete }) => {
   }).format(amount);
 
   return (
-    <tr className="hover:bg-gray-50">
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
         {transaction.date}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
         {transaction.description}
         {transaction.isGoalContribution && (
-          <span className="text-xs text-gray-400 ml-2">(Aporte a meta · no editable)</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">(Aporte a meta · no editable)</span>
         )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
@@ -33,15 +33,15 @@ const TransactionRow = ({ transaction, onEdit, onDelete }) => {
       <td className="px-6 py-4 whitespace-nowrap">
         <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
           transaction.type === 'income'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-red-100 text-red-800'
+            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+            : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
         }`}>
           {transaction.type === 'income' ? 'Ingreso' : 'Gasto'}
         </span>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right">
         <span className={`font-semibold ${
-          transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+          transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
         }`}>
           {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
         </span>
@@ -51,13 +51,13 @@ const TransactionRow = ({ transaction, onEdit, onDelete }) => {
           <>
             <button
               onClick={() => onEdit(transaction)}
-              className="text-indigo-600 hover:text-indigo-800 p-1"
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 p-1"
             >
               ✏️
             </button>
             <button
               onClick={() => onDelete(transaction)}
-              className="text-red-600 hover:text-red-800 p-1"
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-1"
             >
               🗑️
             </button>

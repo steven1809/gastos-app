@@ -205,7 +205,7 @@ const Budgets = () => {
 
   const getOverallStatus = () => {
     if (!status || !status.budgets || status.budgets.length === 0) {
-      return { text: '✅ Bajo control', icon: '✅', bg: 'bg-green-100', totalPaid: 0, totalBudgeted: 0, remaining: 0 };
+      return { text: '✅ Bajo control', icon: '✅', bg: 'bg-green-100 dark:bg-green-900/30', totalPaid: 0, totalBudgeted: 0, remaining: 0 };
     }
     
     // Filtramos solo presupuestos fijos
@@ -217,7 +217,7 @@ const Budgets = () => {
       return { 
         text: '✅ Bajo control', 
         icon: '✅', 
-        bg: 'bg-green-100',
+        bg: 'bg-green-100 dark:bg-green-900/30',
         totalPaid,
         totalBudgeted,
         remaining: totalBudgeted - totalPaid
@@ -251,7 +251,7 @@ const Budgets = () => {
       return { 
         text: '✅ Todo pagado', 
         icon: '✅', 
-        bg: 'bg-green-100',
+        bg: 'bg-green-100 dark:bg-green-900/30',
         totalPaid,
         totalBudgeted,
         remaining
@@ -261,7 +261,7 @@ const Budgets = () => {
       return { 
         text: `💰 Falta ${formatCurrency(remaining)}`, 
         icon: '💰', 
-        bg: 'bg-yellow-100',
+        bg: 'bg-yellow-100 dark:bg-yellow-900/30',
         totalPaid,
         totalBudgeted,
         remaining
@@ -271,7 +271,7 @@ const Budgets = () => {
       return { 
         text: '⚠️ Sin pagos', 
         icon: '⚠️', 
-        bg: 'bg-red-100',
+        bg: 'bg-red-100 dark:bg-red-900/30',
         totalPaid,
         totalBudgeted,
         remaining
@@ -288,7 +288,7 @@ const Budgets = () => {
     if (percentagePaid >= 100) {
       return { 
         text: 'Pagado', 
-        color: 'bg-green-100 text-green-800', 
+        color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300', 
         icon: '✅',
         isPaid: true,
         remaining
@@ -298,7 +298,7 @@ const Budgets = () => {
     if (percentagePaid === 0) {
       return { 
         text: 'Sin pagar', 
-        color: 'bg-red-100 text-red-800', 
+        color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300', 
         icon: '⚠️',
         isPaid: false,
         remaining
@@ -307,7 +307,7 @@ const Budgets = () => {
 
     return { 
       text: `Falta ${formatCurrency(remaining)}`, 
-      color: 'bg-yellow-100 text-yellow-800', 
+      color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300', 
       icon: '💰',
       isPaid: false,
       remaining
@@ -324,7 +324,7 @@ const Budgets = () => {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Presupuestos</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Presupuestos</h1>
         <div className="flex gap-3 items-center">
           <MonthPicker
             month={selectedMonth}
@@ -336,16 +336,16 @@ const Budgets = () => {
       </div>
 
       {status && (
-        <Card className={overallStatus.bg}>
+        <Card className={`${overallStatus.bg} dark:${overallStatus.bg.replace('bg-', 'bg-')}`}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Resumen del mes</h2>
-              <p className="text-sm text-gray-600">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Resumen del mes</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 {formatCurrency(overallStatus.totalPaid)} pagado de {formatCurrency(overallStatus.totalBudgeted)}
               </p>
               <p className="text-2xl font-bold mt-2">{overallStatus.text}</p>
               {overallStatus.remaining > 0 && (
-                <p className="text-lg font-semibold text-gray-700 mt-1">
+                <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 mt-1">
                   Falta: {formatCurrency(overallStatus.remaining)}
                 </p>
               )}
@@ -375,9 +375,9 @@ const Budgets = () => {
             const fixedStatus = budget.isFixed ? getFixedExpenseStatus(budget) : null;
 
             return (
-              <Card key={budget.id} className={isExceeded ? 'border-2 border-red-300' : ''}>
+              <Card key={budget.id} className={isExceeded ? 'border-2 border-red-300 dark:border-red-700' : ''}>
                 {isExceeded && (
-                  <div className="bg-red-100 text-red-800 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
+                  <div className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
                     ¡Presupuesto excedido por {formatCurrency(budget.spent - budget.amount)}!
                   </div>
                 )}
@@ -387,13 +387,13 @@ const Budgets = () => {
                       <Badge color={cat.color}>{cat.name}</Badge>
                     )}
                     {!cat && (
-                      <span className="text-sm text-gray-500">Sin categoría</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Sin categoría</span>
                     )}
                   </div>
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleOpenModal(budget)}
-                      className="text-indigo-600 hover:text-indigo-800 p-1"
+                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 p-1"
                     >
                       ✏️
                     </button>
@@ -402,7 +402,7 @@ const Budgets = () => {
                         setBudgetToDelete(budget);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-600 hover:text-red-800 p-1"
+                      className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-1"
                     >
                       🗑️
                     </button>
@@ -419,11 +419,11 @@ const Budgets = () => {
                       </div>
                     )}
                     <div className="text-center">
-                      <span className="text-2xl font-bold">
+                      <span className="text-2xl font-bold text-gray-900 dark:text-white">
                         {Math.min(100, budget.percentage_used).toFixed(0)}%
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                       <div
                         className={`h-2.5 rounded-full transition-all duration-300 ${
                           Math.min(100, budget.percentage_used) >= 100 ? 'bg-green-500' : 
@@ -433,11 +433,11 @@ const Budgets = () => {
                         style={{ width: `${Math.min(100, budget.percentage_used)}%` }}
                       ></div>
                     </div>
-                    <p className="text-center text-gray-700 text-sm">
+                    <p className="text-center text-gray-700 dark:text-gray-300 text-sm">
                       {formatCurrency(budget.spent)} pagado de {formatCurrency(budget.amount)}
                     </p>
                     {budget.percentage_used < 100 && (
-                      <p className="text-center text-gray-500 text-xs">
+                      <p className="text-center text-gray-500 dark:text-gray-400 text-xs">
                         Falta: {formatCurrency(fixedStatus?.remaining || 0)}
                       </p>
                     )}
@@ -452,12 +452,12 @@ const Budgets = () => {
                 ) : (
                   <div>
                     <div className="text-center mb-4">
-                      <span className="text-4xl font-bold">
+                      <span className="text-4xl font-bold text-gray-900 dark:text-white">
                         {budget.percentage_used.toFixed(0)}%
                       </span>
                     </div>
                     <ProgressBar percentage={budget.percentage_used} height="h-4" />
-                    <p className="text-center mt-3 text-gray-700">
+                    <p className="text-center mt-3 text-gray-700 dark:text-gray-300">
                       {formatCurrency(budget.spent)} gastado de {formatCurrency(budget.amount)}
                     </p>
                   </div>
@@ -471,7 +471,7 @@ const Budgets = () => {
       {!loading && budgets.length === 0 && (
         <Card>
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg mb-4">No tienes presupuestos configurados</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">No tienes presupuestos configurados</p>
             <Button onClick={() => handleOpenModal()}>Crear tu primer presupuesto</Button>
           </div>
         </Card>
@@ -486,7 +486,7 @@ const Budgets = () => {
         >
           <div className="space-y-4">
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Categoría <span className="text-red-500">*</span>
               </label>
               <CategorySelect
@@ -499,13 +499,13 @@ const Budgets = () => {
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Mes de inicio <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.startMonth}
                   onChange={(e) => setFormData({ ...formData, startMonth: Number(e.target.value) })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
                   disabled={!!editingBudget}
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
@@ -531,11 +531,11 @@ const Budgets = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Monto límite <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 dark:text-gray-400">
                   $
                 </div>
                 <input
@@ -543,7 +543,7 @@ const Budgets = () => {
                   onChange={handleAmountChange}
                   placeholder="0"
                   inputMode="numeric"
-                  className="block w-full rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-8 pr-4 py-2.5 sm:text-sm"
+                  className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 pl-8 pr-4 py-2.5 sm:text-sm"
                 />
               </div>
             </div>
@@ -553,9 +553,9 @@ const Budgets = () => {
                 id="isFixed"
                 checked={formData.isFixed}
                 onChange={(e) => setFormData({ ...formData, isFixed: e.target.checked })}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-4 w-4 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 rounded"
               />
-              <label htmlFor="isFixed" className="text-sm font-medium text-gray-700">
+              <label htmlFor="isFixed" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Es gasto fijo mensual
               </label>
             </div>
@@ -570,7 +570,7 @@ const Budgets = () => {
               />
             )}
           </div>
-          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
             <Button
               variant="secondary"
               className="flex-1"
@@ -602,16 +602,16 @@ const Budgets = () => {
             
             return (
               <>
-                <p className="text-gray-700 mb-2">
+                <p className="text-gray-700 dark:text-gray-300 mb-2">
                   ¿Estás seguro de eliminar el presupuesto de {categoryName} para {getMonthName(budgetToDelete.month)} {budgetToDelete.year}?
                 </p>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
                   Límite: {formatCurrency(budgetToDelete.amount)}
                 </p>
                 
-                <hr className="border-gray-200 my-4" />
+                <hr className="border-gray-200 dark:border-gray-700 my-4" />
                 
-                <div className={`${deleteFromHere ? 'bg-amber-50 border-amber-200' : 'bg-transparent border-transparent'} border rounded-lg p-3 transition-all duration-200`}>
+                <div className={`${deleteFromHere ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700' : 'bg-transparent border-transparent'} border rounded-lg p-3 transition-all duration-200`}>
                   <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
@@ -619,25 +619,25 @@ const Budgets = () => {
                       checked={deleteFromHere}
                       onChange={(e) => setDeleteFromHere(e.target.checked)}
                       disabled={isDecember}
-                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 cursor-pointer disabled:opacity-50 bg-white dark:bg-gray-800"
                     />
                     <label 
                       htmlFor="deleteFromHere" 
-                      className={`text-sm font-medium cursor-pointer ${isDecember ? 'text-gray-400' : 'text-gray-700'}`}
+                      className={`text-sm font-medium cursor-pointer ${isDecember ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}
                     >
                       Eliminar también en los meses restantes del año
                     </label>
                   </div>
                   
                   {isDecember && (
-                    <p className="text-gray-400 text-xs mt-1 ml-7">
+                    <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 ml-7">
                       Ya es el último mes del año
                     </p>
                   )}
                   
                   {deleteFromHere && !isDecember && (
                     <div className="mt-3 ml-7 transition-opacity duration-200">
-                      <p className="text-gray-500 text-xs">
+                      <p className="text-gray-500 dark:text-gray-400 text-xs">
                         Se eliminarán los presupuestos de {categoryName} desde {getMonthName(budgetToDelete.month)} hasta Diciembre {budgetToDelete.year}
                       </p>
                     </div>

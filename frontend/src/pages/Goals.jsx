@@ -272,36 +272,36 @@ const Goals = () => {
       )}
 
       <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-        <h1 className="text-2xl font-bold text-gray-900">🎯 Metas de Ahorro</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">🎯 Metas de Ahorro</h1>
         <Button onClick={() => handleOpenModal()}>+ Nueva Meta</Button>
       </div>
 
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200">
+          <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 border border-indigo-200 dark:border-indigo-700">
             <div className="flex items-center gap-3">
               <div className="text-3xl">🎯</div>
               <div>
-                <p className="text-sm text-indigo-700 font-medium">Metas Activas</p>
-                <p className="text-3xl font-bold text-indigo-900">{stats.activeGoals}</p>
+                <p className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">Metas Activas</p>
+                <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-100">{stats.activeGoals}</p>
               </div>
             </div>
           </Card>
-          <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
+          <Card className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-700">
             <div className="flex items-center gap-3">
               <div className="text-3xl">💰</div>
               <div>
-                <p className="text-sm text-green-700 font-medium">Total Ahorrado</p>
-                <p className="text-3xl font-bold text-green-900">{formatCurrency(stats.totalSaved)}</p>
+                <p className="text-sm text-green-700 dark:text-green-300 font-medium">Total Ahorrado</p>
+                <p className="text-3xl font-bold text-green-900 dark:text-green-100">{formatCurrency(stats.totalSaved)}</p>
               </div>
             </div>
           </Card>
-          <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200">
+          <Card className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700">
             <div className="flex items-center gap-3">
               <div className="text-3xl">✅</div>
               <div>
-                <p className="text-sm text-purple-700 font-medium">Metas Completadas</p>
-                <p className="text-3xl font-bold text-purple-900">{stats.completedGoals}</p>
+                <p className="text-sm text-purple-700 dark:text-purple-300 font-medium">Metas Completadas</p>
+                <p className="text-3xl font-bold text-purple-900 dark:text-purple-100">{stats.completedGoals}</p>
               </div>
             </div>
           </Card>
@@ -321,7 +321,7 @@ const Goals = () => {
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeFilter === filter.value
                 ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}
           >
             {filter.label}
@@ -342,25 +342,25 @@ const Goals = () => {
               key={goal.id}
               className={`border-2 ${
                 goal.status === 'completed' 
-                  ? 'bg-green-50 border-green-200' 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700' 
                   : goal.status === 'cancelled' 
-                    ? 'bg-gray-50 border-gray-200' 
+                    ? 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700' 
                     : 'border-transparent'
               } relative`}
             >
               {goal.isOverdue && goal.status === 'active' && (
-                <div className="bg-red-100 text-red-800 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
+                <div className="bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
                   ⚠️ Fecha límite vencida
                 </div>
               )}
 
               {goal.status === 'completed' && (
                 <div className="flex items-center gap-2 mb-4">
-                  <Badge className="bg-green-100 text-green-800 border border-green-200">
+                  <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700">
                     ✅ Completada
                   </Badge>
                   {goal.completedAt && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       Completada el {formatDate(goal.completedAt)}
                     </span>
                   )}
@@ -370,28 +370,28 @@ const Goals = () => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{goal.icon}</span>
-                  <h3 className="text-lg font-bold text-gray-900 truncate">{goal.name}</h3>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{goal.name}</h3>
                 </div>
                 <div className="relative">
                   <button
                     onClick={() => setOpenMenuId(openMenuId === goal.id ? null : goal.id)}
-                    className="text-gray-500 hover:text-gray-700 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
                   >
                     ⋮
                   </button>
                   {openMenuId === goal.id && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10">
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-10">
                       {goal.status === 'active' && (
                         <button
                           onClick={() => handleOpenModal(goal)}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2"
+                          className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300"
                         >
                           ✏️ Editar meta
                         </button>
                       )}
                       <button
                         onClick={() => handleOpenHistoryModal(goal)}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm flex items-center gap-2"
+                        className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300"
                       >
                         📋 Ver aportes
                       </button>
@@ -401,7 +401,7 @@ const Goals = () => {
                             setGoalToDelete(goal);
                             setDeleteConfirmModalOpen(true);
                           }}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm text-red-600 flex items-center gap-2"
+                          className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-red-600 dark:text-red-400 flex items-center gap-2"
                         >
                           ❌ Cancelar meta
                         </button>
@@ -412,19 +412,19 @@ const Goals = () => {
               </div>
 
               {goal.description && (
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{goal.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{goal.description}</p>
               )}
 
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
                     {formatCurrency(goal.currentAmount)} de {formatCurrency(goal.targetAmount)}
                   </span>
-                  <span className="font-bold text-lg">
+                  <span className="font-bold text-lg text-gray-900 dark:text-white">
                     {Math.round(goal.percentage)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div
                     className={`h-2.5 rounded-full transition-all duration-300 ${getProgressBarColor(goal.percentage)}`}
                     style={{ width: `${Math.min(100, goal.percentage)}%` }}
@@ -433,11 +433,11 @@ const Goals = () => {
               </div>
 
               <div className="flex justify-between items-center mb-4 text-sm">
-                <div className="flex items-center gap-1 text-gray-600">
+                <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
                   📅 {formatDate(goal.deadline)}
                 </div>
                 {goal.status === 'active' && (
-                  <div className={`font-medium ${goal.daysLeft < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                  <div className={`font-medium ${goal.daysLeft < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}`}>
                     {goal.daysLeft < 0 
                       ? `Vencida hace ${Math.abs(goal.daysLeft)} días` 
                       : goal.daysLeft === 0 
@@ -449,7 +449,7 @@ const Goals = () => {
               </div>
 
               {goal.status === 'active' && (
-                <p className="text-center text-sm font-medium text-gray-700 mb-4">
+                <p className="text-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
                   Falta: {formatCurrency(goal.remaining)}
                 </p>
               )}
@@ -470,7 +470,7 @@ const Goals = () => {
       {!loading && filteredGoals.length === 0 && (
         <Card>
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg mb-4">No tienes metas configuradas</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">No tienes metas configuradas</p>
             <Button onClick={() => handleOpenModal()}>Crear tu primera meta</Button>
           </div>
         </Card>
@@ -486,19 +486,19 @@ const Goals = () => {
         >
           <div className="space-y-4">
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Nombre <span className="text-red-500">*</span>
               </label>
               <input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Ej: Viaje a la playa"
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 text-base"
               />
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Descripción
               </label>
               <textarea
@@ -506,16 +506,16 @@ const Goals = () => {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="¿Qué quieres lograr?"
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 text-base"
               ></textarea>
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Monto objetivo <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 text-lg">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 dark:text-gray-400 text-lg">
                   $
                 </div>
                 <input
@@ -523,25 +523,25 @@ const Goals = () => {
                   onChange={handleTargetAmountChange}
                   placeholder="0"
                   inputMode="numeric"
-                  className="block w-full rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-3.5 text-base"
+                  className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-3.5 text-base"
                 />
               </div>
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Fecha límite <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 text-base"
               />
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Ícono
               </label>
               <div className="flex flex-wrap gap-2">
@@ -551,8 +551,8 @@ const Goals = () => {
                     onClick={() => setFormData({ ...formData, icon })}
                     className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl border-2 transition-colors ${
                       formData.icon === icon
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-gray-200 hover:border-gray-400'
+                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
                     }`}
                   >
                     {icon}
@@ -562,7 +562,7 @@ const Goals = () => {
             </div>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Color
               </label>
               <div className="flex flex-wrap gap-2">
@@ -572,7 +572,7 @@ const Goals = () => {
                     onClick={() => setFormData({ ...formData, color })}
                     className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
                       formData.color === color
-                        ? 'border-gray-800'
+                        ? 'border-gray-800 dark:border-white'
                         : 'border-transparent'
                     }`}
                     style={{ backgroundColor: color }}
@@ -584,7 +584,7 @@ const Goals = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
             <Button
               variant="secondary"
               className="flex-1"
@@ -611,18 +611,18 @@ const Goals = () => {
           size="md"
         >
           <div className="space-y-4">
-            <div className="text-center py-3 bg-gray-50 rounded-lg mb-4">
-              <p className="text-sm text-gray-600">
+            <div className="text-center py-3 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 Progreso actual: <span className="font-bold">{Math.round(selectedGoalForContribution.percentage)}%</span>
               </p>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Monto del aporte <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 text-lg">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500 dark:text-gray-400 text-lg">
                   $
                 </div>
                 <input
@@ -630,14 +630,14 @@ const Goals = () => {
                   onChange={handleContributionAmountChange}
                   placeholder="¿Cuánto vas a aportar?"
                   inputMode="numeric"
-                  className="block w-full rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-3.5 text-2xl font-bold"
+                  className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-3.5 text-2xl font-bold"
                 />
               </div>
             </div>
 
             {/* Preview de progreso */}
             {contributionFormData.amount > 0 && (
-              <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-100">
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4 border border-indigo-100 dark:border-indigo-700">
                 {(() => {
                   const projectedAmount = Number(selectedGoalForContribution.currentAmount) + Number(contributionFormData.amount);
                   const projectedPercentage = Math.min(100, (projectedAmount / Number(selectedGoalForContribution.targetAmount)) * 100);
@@ -645,15 +645,15 @@ const Goals = () => {
                   
                   return (
                     <div>
-                      <p className="text-center text-sm font-medium text-indigo-800 mb-2">
+                      <p className="text-center text-sm font-medium text-indigo-800 dark:text-indigo-300 mb-2">
                         Con este aporte llegarás al {Math.round(projectedPercentage)}% de tu meta
                       </p>
                       {!willComplete ? (
-                        <p className="text-center text-sm text-gray-600">
+                        <p className="text-center text-sm text-gray-600 dark:text-gray-300">
                           Te faltará {formatCurrency(Number(selectedGoalForContribution.targetAmount) - projectedAmount)} para completarla
                         </p>
                       ) : (
-                        <p className="text-center text-lg font-bold text-green-700">
+                        <p className="text-center text-lg font-bold text-green-700 dark:text-green-400">
                           🎉 ¡Completarás tu meta con este aporte!
                         </p>
                       )}
@@ -664,19 +664,19 @@ const Goals = () => {
             )}
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Fecha
               </label>
               <input
                 type="date"
                 value={contributionFormData.date}
                 onChange={(e) => setContributionFormData({ ...contributionFormData, date: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 text-base"
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Notas
               </label>
               <textarea
@@ -684,12 +684,12 @@ const Goals = () => {
                 onChange={(e) => setContributionFormData({ ...contributionFormData, notes: e.target.value })}
                 placeholder="¿De dónde viene este dinero?"
                 rows={2}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 text-base"
               ></textarea>
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
             <Button
               variant="secondary"
               className="flex-1"
@@ -718,26 +718,26 @@ const Goals = () => {
         >
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {(selectedGoalForHistory.contributions || []).length === 0 ? (
-              <p className="text-center text-gray-600 py-8">No hay aportes registrados</p>
+              <p className="text-center text-gray-600 dark:text-gray-300 py-8">No hay aportes registrados</p>
             ) : (
               (selectedGoalForHistory.contributions || []).sort((a,b) => new Date(b.date) - new Date(a.date)).map(contribution => (
-                <div key={contribution.id} className="flex items-center justify-between py-3 border-b border-gray-100">
+                <div key={contribution.id} className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">📅 {formatDate(contribution.date)}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">📅 {formatDate(contribution.date)}</span>
                     </div>
                     {contribution.notes && (
-                      <p className="text-sm text-gray-500 mt-1">{contribution.notes}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{contribution.notes}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-bold text-green-700">+{formatCurrency(contribution.amount)}</span>
+                    <span className="font-bold text-green-700 dark:text-green-400">+{formatCurrency(contribution.amount)}</span>
                     <button
                       onClick={() => {
                         setContributionToDelete(contribution);
                         setDeleteContributionConfirmOpen(true);
                       }}
-                      className="text-red-600 hover:text-red-800 p-1 min-h-[40px] min-w-[40px] flex items-center justify-center"
+                      className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-1 min-h-[40px] min-w-[40px] flex items-center justify-center"
                     >
                       🗑️
                     </button>
@@ -748,9 +748,9 @@ const Goals = () => {
           </div>
 
           {(selectedGoalForHistory.contributions || []).length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-center font-medium text-gray-700">
-                Total aportado: <span className="text-green-700 font-bold">{formatCurrency(selectedGoalForHistory.currentAmount)}</span>
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-center font-medium text-gray-700 dark:text-gray-300">
+                Total aportado: <span className="text-green-700 dark:text-green-400 font-bold">{formatCurrency(selectedGoalForHistory.currentAmount)}</span>
               </p>
             </div>
           )}
@@ -775,7 +775,7 @@ const Goals = () => {
           title="¿Cancelar meta?"
           size="md"
         >
-          <p className="text-gray-700 mb-6">
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
             La meta "{goalToDelete.name}" será cancelada. Los aportes registrados se conservarán pero no podrás agregar nuevos aportes.
           </p>
           <div className="flex gap-3">
@@ -805,7 +805,7 @@ const Goals = () => {
           title="Eliminar Aporte"
           size="md"
         >
-          <p className="text-gray-700 mb-6">
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
             ¿Estás seguro de eliminar este aporte de {formatCurrency(contributionToDelete.amount)}?
           </p>
           <div className="flex gap-3">

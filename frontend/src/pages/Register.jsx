@@ -56,7 +56,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 py-12 px-4 sm:px-6 lg:px-8">
       {error && (
         <Alert
           type="error"
@@ -65,10 +65,10 @@ const Register = () => {
         />
       )}
       
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">💰 GastosApp</h1>
-          <p className="mt-2 text-gray-600">Crea tu cuenta</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">💰 GastosApp</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">Crea tu cuenta</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -94,7 +94,7 @@ const Register = () => {
           />
           
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Contraseña <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -106,12 +106,12 @@ const Register = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className={`block w-full rounded-lg border ${validationErrors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'} pl-4 pr-12 py-2.5 sm:text-sm`}
+                className={`block w-full rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${validationErrors.password ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500'} pl-4 pr-12 py-2.5 sm:text-sm`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {showPassword ? (
@@ -126,12 +126,12 @@ const Register = () => {
               </button>
             </div>
             {validationErrors.password && (
-              <p className="mt-1 text-sm text-red-600">{validationErrors.password}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.password}</p>
             )}
           </div>
           
           <div className="mb-4">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Confirmar contraseña <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -143,12 +143,12 @@ const Register = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className={`block w-full rounded-lg border ${validationErrors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'} pl-4 pr-12 py-2.5 sm:text-sm`}
+                className={`block w-full rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${validationErrors.confirmPassword ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500'} pl-4 pr-12 py-2.5 sm:text-sm`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {showConfirmPassword ? (
@@ -163,25 +163,25 @@ const Register = () => {
               </button>
             </div>
             {validationErrors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600">{validationErrors.confirmPassword}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.confirmPassword}</p>
             )}
           </div>
 
           <Button
             type="submit"
             loading={loading}
-            className="w-full"
+            className="w-full bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 hover:bg-gradient-to-bl from-green-500 via-yellow-500"
           >
             Crear cuenta
           </Button>
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             ¿Ya tienes cuenta?{' '}
             <Link
               to="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-medium text-indigo-600 dark:text-yellow-400 hover:text-green-500 dark:hover:text-green-300"
             >
               Inicia sesión
             </Link>

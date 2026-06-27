@@ -250,11 +250,11 @@ const Dashboard = () => {
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Saludo - todo el ancho */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl p-4 md:p-6 text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-2 border-indigo-200 dark:border-indigo-700 rounded-xl p-4 md:p-6 text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
           {getGreeting()}, {user?.name || user?.username || 'usuario'}! 👋
         </h1>
-        <p className="text-gray-600 mt-2 text-base md:text-lg">
+        <p className="text-gray-600 dark:text-gray-300 mt-2 text-base md:text-lg">
           Aquí tienes el resumen de tus finanzas para {months[month - 1]} {year}
         </p>
       </div>
@@ -264,7 +264,7 @@ const Dashboard = () => {
         <select
           value={month}
           onChange={(e) => setMonth(parseInt(e.target.value))}
-          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
+          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
         >
           {months.map((m, idx) => (
             <option key={idx + 1} value={idx + 1}>{m}</option>
@@ -273,7 +273,7 @@ const Dashboard = () => {
         <select
           value={year}
           onChange={(e) => setYear(parseInt(e.target.value))}
-          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
+          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
         >
           {[2023, 2024, 2025, 2026].map(y => (
             <option key={y} value={y}>{y}</option>
@@ -283,11 +283,11 @@ const Dashboard = () => {
 
       {/* Tarjetas de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 p-4">
+        <Card className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border border-green-200 dark:border-green-700 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-700 font-medium mb-1 text-sm">Total Ingresos</p>
-              <p className="text-2xl md:text-3xl font-bold text-green-800">{formatCurrency(summary?.totalIncome || 0)}</p>
+              <p className="text-green-700 dark:text-green-300 font-medium mb-1 text-sm">Total Ingresos</p>
+              <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{formatCurrency(summary?.totalIncome || 0)}</p>
             </div>
             <div className="bg-green-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,11 +297,11 @@ const Dashboard = () => {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 p-4">
+        <Card className="bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 border border-red-200 dark:border-red-700 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-red-700 font-medium mb-1 text-sm">Total Gastos</p>
-              <p className="text-2xl md:text-3xl font-bold text-red-800">{formatCurrency(summary?.totalExpenses || 0)}</p>
+              <p className="text-red-700 dark:text-red-300 font-medium mb-1 text-sm">Total Gastos</p>
+              <p className="text-2xl md:text-3xl font-bold text-red-800 dark:text-red-200">{formatCurrency(summary?.totalExpenses || 0)}</p>
             </div>
             <div className="bg-red-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,11 +311,11 @@ const Dashboard = () => {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200 p-4">
+        <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border border-indigo-200 dark:border-indigo-700 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-indigo-700 font-medium mb-1 text-sm">Balance</p>
-              <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700' : 'text-red-700'}`}>{formatCurrency(summary?.balance || 0)}</p>
+              <p className="text-indigo-700 dark:text-indigo-300 font-medium mb-1 text-sm">Balance</p>
+              <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>{formatCurrency(summary?.balance || 0)}</p>
             </div>
             <div className="bg-indigo-500 rounded-full p-2 md:p-3">
               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,10 +328,10 @@ const Dashboard = () => {
         {dashboardSummary.totalBudgeted > 0 && (
           <Card className={
             dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted 
-              ? 'bg-gradient-to-r from-green-50 to-green-100 border border-green-200' 
+              ? 'bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border border-green-200 dark:border-green-700' 
               : dashboardSummary.totalPaid > 0 
-                ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-200' 
-                : 'bg-gradient-to-r from-red-50 to-red-100 border border-red-200'
+                ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 border border-yellow-200 dark:border-yellow-700' 
+                : 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 border border-red-200 dark:border-red-700'
           } p-4>
             <div className="flex items-center justify-between">
               <div>
@@ -366,8 +366,8 @@ const Dashboard = () => {
       {/* Goals Section */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg md:text-xl font-bold text-gray-900">🎯 Progreso de Metas</h2>
-          <Link to="/goals" className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Ver todas →</Link>
+          <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">🎯 Progreso de Metas</h2>
+          <Link to="/goals" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-sm">Ver todas →</Link>
         </div>
 
         {activeGoals.length > 0 ? (
@@ -380,19 +380,19 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{goal.icon}</span>
-                      <span className="font-medium text-gray-900">{goal.name}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{goal.name}</span>
                     </div>
-                    <span className="font-bold">{Math.round(percentage)}%</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{Math.round(percentage)}%</span>
                   </div>
                   
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-1">
                     <div
                       className={`h-2.5 rounded-full transition-all duration-300 ${getProgressBarColor(percentage)}`}
                       style={{ width: `${percentage}%` }}
                     ></div>
                   </div>
                   
-                  <div className="flex justify-between text-sm text-gray-500">
+                  <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                     <span>{formatCurrency(goal.currentAmount || 0)} guardados</span>
                     <span>{formatCurrency(goal.targetAmount)} objetivo</span>
                   </div>
@@ -403,7 +403,7 @@ const Dashboard = () => {
         ) : (
           <Card>
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">No tienes metas activas</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">No tienes metas activas</p>
               <Link to="/goals">
                 <Button>Crear tu primera meta</Button>
               </Link>

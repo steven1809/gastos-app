@@ -10,6 +10,7 @@ const userRoutes = require('./routes/user.routes');
 const reportRoutes = require('./routes/report.routes');
 const chatbotRoutes = require('./routes/chatbot.routes');
 const goalRoutes = require('./routes/goal.routes');
+const currencyRoutes = require('./routes/currency.routes');
 const seedDatabase = require('./config/seed');
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/goals', goalRoutes);
+app.use('/api', currencyRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Servidor funcionando correctamente' });
@@ -33,7 +35,7 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 // DESPUÉS (correcto)
-sequelize.sync()
+sequelize.sync({ alter: true })
   .then(async () => {
     await seedDatabase();
     app.listen(PORT, () => {

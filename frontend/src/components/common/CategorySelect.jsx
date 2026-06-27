@@ -113,8 +113,8 @@ const CategorySelect = ({ value, onChange, type, placeholder = 'Selecciona una c
       <select
         value={showNewCategory ? '__new__' : value || ''}
         onChange={handleSelectChange}
-        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:outline-none transition-colors ${
-          success ? 'border-green-500 focus:ring-green-200' : 'border-gray-300 focus:ring-indigo-200 focus:border-indigo-500'
+        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+          success ? 'border-green-500 focus:ring-green-200 dark:focus:ring-green-900' : 'border-gray-300 dark:border-gray-600 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-500'
         }`}
         disabled={loading}
       >
@@ -148,15 +148,15 @@ const CategorySelect = ({ value, onChange, type, placeholder = 'Selecciona una c
 
       {/* Feedback de éxito */}
       {success && (
-        <p className="text-green-600 text-sm mt-1 font-medium">✓ Categoría creada</p>
+        <p className="text-green-600 dark:text-green-400 text-sm mt-1 font-medium">✓ Categoría creada</p>
       )}
 
       {/* Mini-formulario para nueva categoría */}
       {showNewCategory && (
-        <div className="mt-2 bg-indigo-50 border border-indigo-200 rounded-lg p-3 animate-fadeIn">
+        <div className="mt-2 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg p-3 animate-fadeIn">
           <div className="flex justify-between items-center mb-3">
-            <h4 className="text-sm font-medium text-indigo-700">Nueva categoría personal</h4>
-            <span className="text-xs text-gray-400">Solo visible para ti</span>
+            <h4 className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Nueva categoría personal</h4>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Solo visible para ti</span>
           </div>
 
           {/* Nombre */}
@@ -166,15 +166,15 @@ const CategorySelect = ({ value, onChange, type, placeholder = 'Selecciona una c
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="Nombre de la categoría (ej. Nómina, Mascotas...)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 focus:outline-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               autoFocus
             />
-            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+            {error && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{error}</p>}
           </div>
 
           {/* Selección de color */}
           <div className="mb-3">
-            <p className="text-xs text-gray-600 mb-2">Color:</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Color:</p>
             <div className="flex gap-2">
               {COLOR_OPTIONS.map(color => (
                 <button
@@ -182,7 +182,7 @@ const CategorySelect = ({ value, onChange, type, placeholder = 'Selecciona una c
                   type="button"
                   onClick={() => setNewCategoryColor(color.value)}
                   className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${
-                    newCategoryColor === color.value ? 'border-gray-900 scale-110' : 'border-transparent'
+                    newCategoryColor === color.value ? 'border-gray-900 dark:border-white scale-110' : 'border-transparent'
                   }`}
                   style={{ backgroundColor: color.value }}
                   title={color.label}
@@ -196,7 +196,7 @@ const CategorySelect = ({ value, onChange, type, placeholder = 'Selecciona una c
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-1.5 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              className="px-4 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
               disabled={creating}
             >
               Cancelar

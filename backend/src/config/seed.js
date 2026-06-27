@@ -8,7 +8,8 @@ const seedDatabase = async () => {
         name: 'Administrador',
         email: 'admin@gastos.com',
         password: 'admin123',
-        role: 'admin'
+        role: 'admin',
+        currency: 'COP'
       });
       console.log('Usuario admin creado');
     }
@@ -19,7 +20,8 @@ const seedDatabase = async () => {
         name: 'Usuario Demo',
         email: 'demo@gastos.com',
         password: 'demo123',
-        role: 'user'
+        role: 'user',
+        currency: 'COP'
       });
       console.log('Usuario demo creado');
 

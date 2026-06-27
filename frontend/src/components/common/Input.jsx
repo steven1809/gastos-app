@@ -16,13 +16,13 @@ const Input = ({
   return (
     <div className={`mb-4 ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
             {icon}
           </div>
         )}
@@ -34,12 +34,12 @@ const Input = ({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className={`block w-full rounded-lg border ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'} ${icon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 sm:text-sm`}
+          className={`block w-full rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${error ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-700 focus:border-indigo-500 focus:ring-indigo-500'} ${icon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 sm:text-sm`}
           {...props}
         />
       </div>
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
     </div>
   );

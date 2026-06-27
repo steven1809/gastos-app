@@ -31,6 +31,11 @@ const User = sequelize.define('User', {
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  currency: {
+    type: DataTypes.ENUM('COP', 'USD', 'EUR'),
+    defaultValue: 'COP',
+    allowNull: false
   }
 }, {
   hooks: {

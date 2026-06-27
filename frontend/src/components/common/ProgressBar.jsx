@@ -19,7 +19,7 @@ const ProgressBar = ({
 
   return (
     <div className="relative">
-      <div className={`w-full bg-gray-200 rounded-full overflow-hidden ${height}`}>
+      <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden ${height}`}>
         <div
           className={`${getStatusColor()} rounded-full h-full transition-all duration-500 ease-out ${
             animated ? 'animate-pulse' : ''
@@ -29,12 +29,12 @@ const ProgressBar = ({
       </div>
       {isOverflow && (
         <div
-          className="absolute top-0 left-0 bg-red-200 rounded-full opacity-30 h-full"
+          className="absolute top-0 left-0 bg-red-200 dark:bg-red-900 rounded-full opacity-30 h-full"
           style={{ width: '100%' }}
         ></div>
       )}
       {showLabel && (
-        <p className="text-xs text-gray-600 mt-1 text-right">{percentage.toFixed(0)}%</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 text-right">{percentage.toFixed(0)}%</p>
       )}
     </div>
   );

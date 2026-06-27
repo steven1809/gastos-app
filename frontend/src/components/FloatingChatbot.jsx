@@ -82,7 +82,7 @@ const FloatingChatbot = () => {
       {isOpen && (
         <>
           {/* Mobile: Fullscreen */}
-          <div className="fixed inset-0 bg-white md:hidden flex flex-col z-[9999]">
+          <div className="fixed inset-0 bg-white dark:bg-gray-900 md:hidden flex flex-col z-[9999]">
             {/* Mobile Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-3 flex items-center justify-between">
               <button
@@ -109,7 +109,7 @@ const FloatingChatbot = () => {
 
             {/* Mobile Messages */}
             <div 
-              className="flex-1 overflow-y-auto p-4 bg-gray-50"
+              className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-950"
               style={{ height: 'calc(100vh - 64px - 72px)' }}
             >
               {messages.map((msg, idx) => (
@@ -124,7 +124,7 @@ const FloatingChatbot = () => {
                         <button
                           key={sidx}
                           onClick={() => sendMessage(suggestion)}
-                          className="px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                           {suggestion}
                         </button>
@@ -136,14 +136,14 @@ const FloatingChatbot = () => {
               
               {loading && (
                 <div className="flex gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                     💰
                   </div>
-                  <div className="bg-gray-100 px-3 py-2 rounded-xl rounded-bl-md">
+                  <div className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-xl rounded-bl-md">
                     <div className="flex gap-1">
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                     </div>
                   </div>
                 </div>
@@ -152,7 +152,7 @@ const FloatingChatbot = () => {
             </div>
 
             {/* Mobile Input */}
-            <div className="bg-white border-t border-gray-200 p-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
+            <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 12px)' }}>
               <div className="flex gap-2 items-end">
                 <textarea
                   value={inputValue}
@@ -160,7 +160,7 @@ const FloatingChatbot = () => {
                   onKeyDown={handleKeyDown}
                   placeholder="Escribe tu mensaje..."
                   rows={1}
-                  className="flex-1 px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none overflow-hidden text-base"
+                  className="flex-1 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none overflow-hidden text-base"
                   style={{ maxHeight: '100px' }}
                 />
                 <button
@@ -177,7 +177,7 @@ const FloatingChatbot = () => {
           </div>
 
           {/* Desktop: Floating Window */}
-          <div className="hidden md:flex bg-white rounded-xl shadow-2xl overflow-hidden w-96 h-[600px] flex-col border border-gray-200">
+          <div className="hidden md:flex bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden w-96 h-[600px] flex-col border border-gray-200 dark:border-gray-700">
             {/* Desktop Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-3 flex justify-between items-center">
               <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ const FloatingChatbot = () => {
             </div>
 
             {/* Desktop Messages */}
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-950">
               {messages.map((msg, idx) => (
                 <div key={msg.id}>
                   <ChatBubble
@@ -211,7 +211,7 @@ const FloatingChatbot = () => {
                         <button
                           key={sidx}
                           onClick={() => sendMessage(suggestion)}
-                          className="px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                           {suggestion}
                         </button>
@@ -223,14 +223,14 @@ const FloatingChatbot = () => {
               
               {loading && (
                 <div className="flex gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
                     💰
                   </div>
-                  <div className="bg-gray-100 px-3 py-2 rounded-xl rounded-bl-md">
+                  <div className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-xl rounded-bl-md">
                     <div className="flex gap-1">
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                     </div>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ const FloatingChatbot = () => {
             </div>
 
             {/* Desktop Input */}
-            <div className="bg-white border-t border-gray-200 p-3">
+            <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-3">
               <div className="flex gap-2 items-end">
                 <textarea
                   value={inputValue}
@@ -247,7 +247,7 @@ const FloatingChatbot = () => {
                   onKeyDown={handleKeyDown}
                   placeholder="Escribe tu mensaje..."
                   rows={1}
-                  className="flex-1 px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none overflow-hidden text-sm"
+                  className="flex-1 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none overflow-hidden text-sm"
                   style={{ maxHeight: '100px' }}
                 />
                 <button

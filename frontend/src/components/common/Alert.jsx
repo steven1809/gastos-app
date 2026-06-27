@@ -11,41 +11,41 @@ const Alert = ({
 
   const typeStyles = {
     success: {
-      bg: 'bg-green-50',
-      border: 'border-green-400',
-      text: 'text-green-800',
+      bg: 'bg-green-50 dark:bg-green-900/30',
+      border: 'border-green-400 dark:border-green-700',
+      text: 'text-green-800 dark:text-green-300',
       icon: (
-        <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-green-400 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
         </svg>
       )
     },
     error: {
-      bg: 'bg-red-50',
-      border: 'border-red-400',
-      text: 'text-red-800',
+      bg: 'bg-red-50 dark:bg-red-900/30',
+      border: 'border-red-400 dark:border-red-700',
+      text: 'text-red-800 dark:text-red-300',
       icon: (
-        <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-red-400 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       )
     },
     warning: {
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-400',
-      text: 'text-yellow-800',
+      bg: 'bg-yellow-50 dark:bg-yellow-900/30',
+      border: 'border-yellow-400 dark:border-yellow-700',
+      text: 'text-yellow-800 dark:text-yellow-300',
       icon: (
-        <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-yellow-400 dark:text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
         </svg>
       )
     },
     info: {
-      bg: 'bg-blue-50',
-      border: 'border-blue-400',
-      text: 'text-blue-800',
+      bg: 'bg-blue-50 dark:bg-blue-900/30',
+      border: 'border-blue-400 dark:border-blue-700',
+      text: 'text-blue-800 dark:text-blue-300',
       icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-blue-400 dark:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
       )
