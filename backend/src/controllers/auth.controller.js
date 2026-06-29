@@ -9,6 +9,20 @@ const generateToken = (user) => {
   );
 };
 
+const checkEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).json({ error: 'Email es requerido' });
+    }
+
+    const user = await User.findOne({ where: { email } });
+    res.json({ exists: !!user });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al verificar email' });
+  }
+};
+
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -38,16 +52,16 @@ const login = async (req, res) => {
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+      return res.status(404).json({ error: 'user_not_found' });
     }
 
     const isPasswordValid = await user.validatePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+      return res.status(401).json({ error: 'invalid_credentials' });
     }
 
     if (!user.isActive) {
-      return res.status(403).json({ error: 'Cuenta desactivada' });
+      return res.status(403).json({ error: 'account_disabled' });
     }
 
     const token = generateToken(user);
@@ -92,6 +106,7 @@ const changePassword = async (req, res) => {
 };
 
 module.exports = {
+  checkEmail,
   register,
   login,
   getProfile,

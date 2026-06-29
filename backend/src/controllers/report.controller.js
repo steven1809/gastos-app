@@ -2,6 +2,7 @@ const { Op, Sequelize } = require('sequelize');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const { Transaction, Category, GoalContribution, Goal } = require('../models');
+const { monthFilter, yearFilter, monthYearFilter, monthFormat, dateFormat, isPostgres } = require('../utils/queryHelpers');
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(amount);
@@ -126,10 +127,7 @@ const getSummaryReport = async (req, res) => {
       const monthTransactions = await Transaction.findAll({
         where: {
           userId: req.user.id,
-          [Op.and]: [
-            Sequelize.where(Sequelize.fn('strftime', '%m', Sequelize.col('date')), String(month).padStart(2, '0')),
-            Sequelize.where(Sequelize.fn('strftime', '%Y', Sequelize.col('date')), String(year))
-          ]
+          [Op.and]: monthYearFilter('date', month, year)
         },
         include: [{ model: Category }]
       });
@@ -138,16 +136,7 @@ const getSummaryReport = async (req, res) => {
       const monthGoalContributions = await GoalContribution.findAll({
         where: {
           userId: req.user.id,
-          [Op.and]: [
-            Sequelize.where(
-              Sequelize.fn('strftime', '%m', Sequelize.col('date')),
-              String(month).padStart(2, '0')
-            ),
-            Sequelize.where(
-              Sequelize.fn('strftime', '%Y', Sequelize.col('date')),
-              String(year)
-            )
-          ]
+          [Op.and]: monthYearFilter('GoalContribution.date', month, year)
         }
       });
       

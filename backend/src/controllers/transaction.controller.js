@@ -1,5 +1,6 @@
-const { Op, Sequelize } = require('sequelize');
-const { Transaction, Category, GoalContribution, Goal } = require('../models');
+const { Op, Sequelize } = require('sequelize')
+const { Transaction, Category, GoalContribution, Goal } = require('../models')
+const { monthFilter, yearFilter, monthYearFilter, monthFormat, dateFormat, isPostgres } = require('../utils/queryHelpers');
 
 const getAll = async (req, res) => {
   try {
@@ -189,10 +190,7 @@ const getSummary = async (req, res) => {
     const transactions = await Transaction.findAll({
       where: {
         userId: req.user.id,
-        [Op.and]: [
-          Sequelize.where(Sequelize.fn('strftime', '%m', Sequelize.col('date')), String(month).padStart(2, '0')),
-          Sequelize.where(Sequelize.fn('strftime', '%Y', Sequelize.col('date')), String(year))
-        ]
+        [Op.and]: monthYearFilter('date', month, year)
       },
       include: [{ model: Category }]
     });
@@ -202,16 +200,7 @@ const getSummary = async (req, res) => {
       include: [{ model: Goal }],
       where: {
         userId: req.user.id,
-        [Op.and]: [
-          Sequelize.where(
-            Sequelize.fn('strftime', '%m', Sequelize.col('date')),
-            String(month).padStart(2, '0')
-          ),
-          Sequelize.where(
-            Sequelize.fn('strftime', '%Y', Sequelize.col('date')),
-            String(year)
-          )
-        ]
+        [Op.and]: monthYearFilter('GoalContribution.date', month, year)
       }
     });
 
@@ -323,11 +312,57 @@ const getSummary = async (req, res) => {
   }
 };
 
+const getTodaySummary = async (req, res) => {
+  try {
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0];
+
+    // Obtener transacciones de hoy
+    const transactions = await Transaction.findAll({
+      where: {
+        userId: req.user.id,
+        date: dateStr
+      }
+    });
+
+    // Obtener aportes de hoy
+    const goalContributions = await GoalContribution.findAll({
+      where: {
+        userId: req.user.id,
+        date: dateStr
+      }
+    });
+
+    const totalIncome = transactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    const totalExpenses = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0) +
+      goalContributions.reduce((sum, contrib) => sum + parseFloat(contrib.amount), 0);
+
+    const hasMovements = totalIncome > 0 || totalExpenses > 0;
+    const count = transactions.length + goalContributions.length;
+
+    res.json({
+      hasMovements,
+      count,
+      totalIncome,
+      totalExpenses
+    });
+  } catch (error) {
+    console.error('Error getting today summary:', error);
+    res.status(500).json({ error: 'Error al obtener resumen del día' });
+  }
+};
+
 module.exports = {
   getAll,
   getById,
   create,
   update,
   remove,
-  getSummary
+  getSummary,
+  getTodaySummary
 };
