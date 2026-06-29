@@ -16,8 +16,11 @@ const Transaction = sequelize.define('Transaction', {
     allowNull: false
   },
   type: {
-    type: DataTypes.ENUM('income', 'expense'),
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      isIn: [['income', 'expense']]
+    }
   },
   date: {
     type: DataTypes.DATEONLY,

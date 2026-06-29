@@ -34,8 +34,7 @@ app.get('/api/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// DESPUÉS (correcto)
-sequelize.sync({ force: false })
+sequelize.sync({ force: false, alter: false })
   .then(async () => {
     await seedDatabase();
     app.listen(PORT, () => {

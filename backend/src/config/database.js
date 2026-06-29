@@ -1,10 +1,27 @@
-const { Sequelize } = require('sequelize');
-const path = require('path');
+const { Sequelize } = require('sequelize')
+const path = require('path')
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, '../../database.sqlite'),
-  logging: process.env.NODE_ENV === 'production' ? false : console.log
-});
+let sequelize
 
-module.exports = sequelize;
+if (process.env.DATABASE_URL) {
+  // Producción: PostgreSQL en Railway
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false
+  })
+} else {
+  // Desarrollo local: SQLite
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: path.join(__dirname, '../../database.sqlite'),
+    logging: false
+  })
+}
+
+module.exports = sequelize

@@ -12,8 +12,11 @@ const Category = sequelize.define('Category', {
     allowNull: false
   },
   type: {
-    type: DataTypes.ENUM('income', 'expense'),
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      isIn: [['income', 'expense']]
+    }
   },
   icon: {
     type: DataTypes.STRING,

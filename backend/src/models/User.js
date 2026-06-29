@@ -25,17 +25,23 @@ const User = sequelize.define('User', {
     allowNull: false
   },
   role: {
-    type: DataTypes.ENUM('admin', 'user'),
-    defaultValue: 'user'
+    type: DataTypes.STRING,
+    defaultValue: 'user',
+    validate: {
+      isIn: [['admin', 'user']]
+    }
   },
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   },
   currency: {
-    type: DataTypes.ENUM('COP', 'USD', 'EUR'),
+    type: DataTypes.STRING,
     defaultValue: 'COP',
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isIn: [['COP', 'USD', 'EUR']]
+    }
   }
 }, {
   hooks: {

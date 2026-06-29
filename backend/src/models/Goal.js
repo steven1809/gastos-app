@@ -42,9 +42,12 @@ const Goal = sequelize.define('Goal', {
     defaultValue: '#6366f1'
   },
   status: {
-    type: DataTypes.ENUM('active', 'completed', 'cancelled'),
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'active'
+    defaultValue: 'active',
+    validate: {
+      isIn: [['active', 'completed', 'cancelled']]
+    }
   },
   completedAt: {
     type: DataTypes.DATE,
