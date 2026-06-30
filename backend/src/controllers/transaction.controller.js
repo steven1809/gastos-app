@@ -14,7 +14,8 @@ const getAll = async (req, res) => {
     if (startDate && endDate) {
       where.date = { [Op.between]: [startDate, endDate] };
     } else if (month && year) {
-      where.date = { [Op.startsWith]: `${year}-${String(month).padStart(2, '0')}` };
+      if (!where[Op.and]) where[Op.and] = [];
+      where[Op.and].push(...monthYearFilter('date', month, year));
     }
 
     const offset = (page - 1) * limit;
@@ -34,7 +35,8 @@ const getAll = async (req, res) => {
       if (startDate && endDate) {
         goalContribWhere.date = { [Op.between]: [startDate, endDate] };
       } else if (month && year) {
-        goalContribWhere.date = { [Op.startsWith]: `${year}-${String(month).padStart(2, '0')}` };
+        if (!goalContribWhere[Op.and]) goalContribWhere[Op.and] = [];
+        goalContribWhere[Op.and].push(...monthYearFilter('date', month, year));
       }
 
       const contributions = await GoalContribution.findAll({
