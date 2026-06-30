@@ -136,7 +136,7 @@ const getSummaryReport = async (req, res) => {
       const monthGoalContributions = await GoalContribution.findAll({
         where: {
           userId: req.user.id,
-          [Op.and]: monthYearFilter('GoalContribution.date', month, year)
+          [Op.and]: monthYearFilter('date', month, year)
         }
       });
       

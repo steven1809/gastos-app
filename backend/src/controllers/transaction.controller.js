@@ -200,7 +200,7 @@ const getSummary = async (req, res) => {
       include: [{ model: Goal }],
       where: {
         userId: req.user.id,
-        [Op.and]: monthYearFilter('GoalContribution.date', month, year)
+        [Op.and]: monthYearFilter('date', month, year)
       }
     });
 
