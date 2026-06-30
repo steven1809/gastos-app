@@ -66,7 +66,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl">🍊</span>
+            <span className="text-2xl"></span>
             <span className="text-xl font-bold text-gray-900 dark:text-white">GastosApp</span>
           </Link>
 
@@ -90,119 +90,146 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 z-40">
-          <div className="p-4 space-y-4">
-            {/* Principal Section */}
-            <div>
-              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Principal</p>
-              <div className="space-y-2">
-                {navLinks.filter(l => l.category !== 'analysis' && l.category !== 'account').map((link) => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-4 p-3 rounded-xl transition-all ${
-                      location.pathname === link.path
-                        ? 'bg-gradient-to-r ' + link.color + ' text-white shadow-md'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                      location.pathname === link.path ? 'bg-white/20' : 'bg-gradient-to-r ' + link.color}`}>
-                      {link.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">{link.label}</p>
-                      {link.description && (
-                        <p className="text-xs opacity-75">{link.description}</p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Analysis Section */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Análisis</p>
-              <div className="space-y-2">
-                {navLinks.filter(l => l.category === 'analysis').map((link) => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-4 p-3 rounded-xl transition-all ${
-                      location.pathname === link.path
-                        ? 'bg-gradient-to-r ' + link.color + ' text-white shadow-md'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                      location.pathname === link.path ? 'bg-white/20' : 'bg-gradient-to-r ' + link.color}`}>
-                      {link.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">{link.label}</p>
-                      {link.description && (
-                        <p className="text-xs opacity-75">{link.description}</p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Account Section */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Cuenta</p>
-              <div className="space-y-2">
-                {navLinks.filter(l => l.category === 'account').map((link) => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-4 p-3 rounded-xl transition-all ${
-                      location.pathname === link.path
-                        ? 'bg-gradient-to-r ' + link.color + ' text-white shadow-md'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
-                      location.pathname === link.path ? 'bg-white/20' : 'bg-gradient-to-r ' + link.color}`}>
-                      {link.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">{link.label}</p>
-                      {link.description && (
-                        <p className="text-xs opacity-75">{link.description}</p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* User Info & Logout */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-              <div className="flex items-center gap-3 p-2 mb-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-xl font-bold">
-                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900 dark:text-white">{user?.name || 'Usuario Demo'}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email || 'demo@gastos.com'}</p>
-                </div>
-              </div>
-              
+        <div className="fixed inset-0 z-[9999]">
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)}></div>
+          
+          {/* Sidebar */}
+          <div className="absolute top-0 right-0 h-full w-[30%] min-w-[280px] bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 shadow-xl">
+            {/* Close button */}
+            <div className="flex justify-end p-4">
               <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <span className="font-semibold">Cerrar sesión</span>
               </button>
+            </div>
+
+            {/* Logo */}
+            <div className="px-6 pb-4">
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
+                <span className="text-2xl"></span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">GastosApp</span>
+              </Link>
+            </div>
+
+            {/* Menu content */}
+            <div className="px-4 space-y-4 overflow-y-auto h-[calc(100%-100px)]">
+              {/* Principal Section */}
+              <div>
+                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Principal</p>
+                <div className="space-y-2">
+                  {navLinks.filter(l => l.category !== 'analysis' && l.category !== 'account').map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-4 p-3 rounded-xl transition-all ${
+                        location.pathname === link.path
+                          ? 'bg-gradient-to-r ' + link.color + ' text-white shadow-md'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                        location.pathname === link.path ? 'bg-white/20' : 'bg-gradient-to-r ' + link.color}`}>
+                        {link.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold">{link.label}</p>
+                        {link.description && (
+                          <p className="text-xs opacity-75">{link.description}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Analysis Section */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Análisis</p>
+                <div className="space-y-2">
+                  {navLinks.filter(l => l.category === 'analysis').map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-4 p-3 rounded-xl transition-all ${
+                        location.pathname === link.path
+                          ? 'bg-gradient-to-r ' + link.color + ' text-white shadow-md'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                        location.pathname === link.path ? 'bg-white/20' : 'bg-gradient-to-r ' + link.color}`}>
+                        {link.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold">{link.label}</p>
+                        {link.description && (
+                          <p className="text-xs opacity-75">{link.description}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Account Section */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Cuenta</p>
+                <div className="space-y-2">
+                  {navLinks.filter(l => l.category === 'account').map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-4 p-3 rounded-xl transition-all ${
+                        location.pathname === link.path
+                          ? 'bg-gradient-to-r ' + link.color + ' text-white shadow-md'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                        location.pathname === link.path ? 'bg-white/20' : 'bg-gradient-to-r ' + link.color}`}>
+                        {link.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold">{link.label}</p>
+                        {link.description && (
+                          <p className="text-xs opacity-75">{link.description}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* User Info & Logout */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-8">
+                <div className="flex items-center gap-3 p-2 mb-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-xl font-bold">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900 dark:text-white">{user?.name || 'Usuario Demo'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email || 'demo@gastos.com'}</p>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span className="font-semibold">Cerrar sesión</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

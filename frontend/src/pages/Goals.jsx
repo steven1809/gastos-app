@@ -265,46 +265,47 @@ const Goals = () => {
   });
 
   return (
-    <div className="space-y-6" ref={menuRef}>
+    <div className="space-y-6 px-4 sm:px-6 pb-24" ref={menuRef}>
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
       {successMessage && (
         <Alert type="success" message={successMessage} onClose={() => setSuccessMessage(null)} />
       )}
 
-      <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Metas de Ahorro</h1>
-        <Button onClick={() => handleOpenModal()}>+ Nueva Meta</Button>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold text-center py-4 text-gray-900 dark:text-white">Mis Metas de Ahorro</h1>
+        <div className="flex items-center justify-start">
+          <button 
+            onClick={() => handleOpenModal()} 
+            className="text-lg px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white font-semibold flex items-center gap-2"
+          >
+            + Nueva Meta
+          </button>
+        </div>
       </div>
 
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 border border-indigo-200 dark:border-indigo-700">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl">🎯</div>
-              <div>
-                <p className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">Metas Activas</p>
-                <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-100">{stats.activeGoals}</p>
-              </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-4 border border-blue-200 dark:border-blue-800/30">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-purple-200 dark:bg-purple-900/50 flex items-center justify-center text-xl">🎯</div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Activas</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.activeGoals}</p>
             </div>
-          </Card>
-          <Card className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-700">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl">💰</div>
-              <div>
-                <p className="text-sm text-green-700 dark:text-green-300 font-medium">Total Ahorrado</p>
-                <p className="text-3xl font-bold text-green-900 dark:text-green-100">{formatAmount(stats.totalSaved)}</p>
-              </div>
+          </div>
+          <div className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-4 border border-blue-200 dark:border-blue-800/30">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-green-200 dark:bg-green-900/50 flex items-center justify-center text-xl">💰</div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Ahorrado</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatAmount(stats.totalSaved)}</p>
             </div>
-          </Card>
-          <Card className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl">✅</div>
-              <div>
-                <p className="text-sm text-purple-700 dark:text-purple-300 font-medium">Metas Completadas</p>
-                <p className="text-3xl font-bold text-purple-900 dark:text-purple-100">{stats.completedGoals}</p>
-              </div>
+          </div>
+          <div className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-4 border border-blue-200 dark:border-blue-800/30">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-blue-200 dark:bg-blue-900/50 flex items-center justify-center text-xl">✅</div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Completadas</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.completedGoals}</p>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
@@ -318,10 +319,10 @@ const Goals = () => {
           <button
             key={filter.value}
             onClick={() => setActiveFilter(filter.value)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`px-6 py-2 rounded-xl font-semibold transition-colors border-2 text-lg ${
               activeFilter === filter.value
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                ? 'bg-blue-500 border-blue-500 text-white'
+                : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}
           >
             {filter.label}
@@ -329,69 +330,55 @@ const Goals = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="space-y-4">
         {loading ? (
-          Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="h-96 bg-gray-200 rounded-lg"></div>
-            </Card>
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30 animate-pulse">
+              <div className="h-48"></div>
+            </div>
           ))
         ) : (
           filteredGoals.map(goal => (
-            <Card 
+            <div 
               key={goal.id}
-              className={`border-2 ${
+              className={`bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30 relative ${
                 goal.status === 'completed' 
-                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700' 
+                  ? 'border-green-500' 
                   : goal.status === 'cancelled' 
-                    ? 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700' 
-                    : 'border-transparent'
-              } relative`}
+                    ? 'border-gray-500 dark:border-gray-600' 
+                    : ''
+              }`}
             >
-              {goal.isOverdue && goal.status === 'active' && (
-                <div className="bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
-                  ⚠️ Fecha límite vencida
-                </div>
-              )}
-
-              {goal.status === 'completed' && (
-                <div className="flex items-center gap-2 mb-4">
-                  <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700">
-                    ✅ Completada
-                  </Badge>
-                  {goal.completedAt && (
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      Completada el {formatDate(goal.completedAt)}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <span className="text-2xl">{goal.icon}</span>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{goal.name}</h3>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{goal.name}</h3>
+                    {goal.description && (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{goal.description}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="relative">
                   <button
                     onClick={() => setOpenMenuId(openMenuId === goal.id ? null : goal.id)}
-                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    className="w-8 h-8 rounded border border-gray-400 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                   >
                     ⋮
                   </button>
                   {openMenuId === goal.id && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-10">
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-10">
                       {goal.status === 'active' && (
                         <button
                           onClick={() => handleOpenModal(goal)}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                          className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300"
                         >
                           ✏️ Editar meta
                         </button>
                       )}
                       <button
                         onClick={() => handleOpenHistoryModal(goal)}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300"
+                        className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300"
                       >
                         📋 Ver aportes
                       </button>
@@ -401,7 +388,7 @@ const Goals = () => {
                             setGoalToDelete(goal);
                             setDeleteConfirmModalOpen(true);
                           }}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-red-600 dark:text-red-400 flex items-center gap-2"
+                          className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-red-600 dark:text-red-400 flex items-center gap-2"
                         >
                           ❌ Cancelar meta
                         </button>
@@ -411,33 +398,37 @@ const Goals = () => {
                 </div>
               </div>
 
-              {goal.description && (
-                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{goal.description}</p>
-              )}
-
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
                     {formatAmount(goal.currentAmount)} de {formatAmount(goal.targetAmount)}
                   </span>
-                  <span className="font-bold text-lg text-gray-900 dark:text-white">
+                  <span className="font-bold text-xl text-indigo-600 dark:text-indigo-400">
                     {Math.round(goal.percentage)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                <div className="w-full bg-blue-200 dark:bg-blue-900/50 rounded-full h-2.5">
                   <div
-                    className={`h-2.5 rounded-full transition-all duration-300 ${getProgressBarColor(goal.percentage)}`}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      goal.percentage >= 100 
+                        ? 'bg-green-500' 
+                        : goal.percentage >= 70 
+                          ? 'bg-blue-500' 
+                          : goal.percentage >= 30 
+                            ? 'bg-yellow-500' 
+                            : 'bg-red-500'
+                    }`}
                     style={{ width: `${Math.min(100, goal.percentage)}%` }}
                   ></div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mb-4 text-sm">
-                <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <div className="flex justify-between items-center mb-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2">
                   📅 {formatDate(goal.deadline)}
                 </div>
                 {goal.status === 'active' && (
-                  <div className={`font-medium ${goal.daysLeft < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}`}>
+                  <div className="text-gray-600 dark:text-gray-400">
                     {goal.daysLeft < 0 
                       ? `Vencida hace ${Math.abs(goal.daysLeft)} días` 
                       : goal.daysLeft === 0 
@@ -449,31 +440,31 @@ const Goals = () => {
               </div>
 
               {goal.status === 'active' && (
-                <p className="text-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Falta: {formatAmount(goal.remaining)}
                 </p>
               )}
 
               {goal.status === 'active' && (
-                <Button 
+                <button 
                   onClick={() => handleOpenContributionModal(goal)}
-                  className="w-full"
+                  className="w-full py-3 rounded-xl border-2 border-gray-400 dark:border-gray-600 text-gray-900 dark:text-white font-semibold text-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                 >
                   + Agregar Aporte
-                </Button>
+                </button>
               )}
-            </Card>
+            </div>
           ))
         )}
       </div>
 
       {!loading && filteredGoals.length === 0 && (
-        <Card>
+        <div className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30">
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">No tienes metas configuradas</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">No tienes metas configuradas</p>
             <Button onClick={() => handleOpenModal()}>Crear tu primera meta</Button>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Modal: Nueva/Editar Meta */}

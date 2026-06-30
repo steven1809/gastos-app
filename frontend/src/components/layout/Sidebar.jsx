@@ -180,16 +180,6 @@ const Sidebar = ({ isSidebarLayout = false }) => {
 
       {/* User Info & Logout */}
       <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-3 p-3 mb-2">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-2xl font-bold">
-            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-          </div>
-          <div className="flex-1">
-            <p className="font-semibold text-gray-900 dark:text-white">{user?.name || 'Usuario Demo'}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email || 'demo@gastos.com'}</p>
-          </div>
-        </div>
-        
         <div className="p-2">
           <button
             onClick={handleLogout}

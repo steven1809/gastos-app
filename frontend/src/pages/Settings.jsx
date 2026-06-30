@@ -270,18 +270,6 @@ const Settings = () => {
           <button className="w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-red-50 dark:hover:bg-red-900/20 text-left">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-red-600 dark:text-red-400">Cerrar sesión</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Salir de tu cuenta</p>
-            </div>
-          </button>
-
-          <button className="w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-red-50 dark:hover:bg-red-900/20 text-left">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </div>

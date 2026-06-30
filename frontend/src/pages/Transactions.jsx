@@ -175,10 +175,11 @@ const Transactions = () => {
       {successMessage && (
         <Alert type="success" message={successMessage} onClose={() => setSuccessMessage(null)} />
       )}
+      
+      <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Mis Transacciones</h1>
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Transacciones</h1>
           <Button onClick={handleAddTransaction} className="w-full md:w-auto">+ Nueva Transacción</Button>
         </div>
 
@@ -205,7 +206,7 @@ const Transactions = () => {
             onClick={() => setShowFilters(!showFilters)}
             className={`px-4 py-2 rounded-xl border transition-all ${showFilters ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white border-transparent shadow-md' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
           >
-            🔍 Filtros
+            ▽ Filtros
           </button>
         </div>
 
@@ -374,7 +375,7 @@ const Transactions = () => {
                                 onClick={() => handleEditTransaction(transaction)}
                                 className="px-4 py-2 rounded-lg text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors min-h-[40px] flex items-center"
                               >
-                                ✏️ Editar
+                                Editar
                               </button>
                               <button
                                 onClick={() => handleDeleteClick(transaction)}

@@ -250,12 +250,12 @@ const Dashboard = () => {
   return (
     <div className="p-4 space-y-4 bg-white dark:bg-gray-950 min-h-screen">
       {/* Saludo y selectores */}
-      <div className="bg-gradient-to-r from-indigo-700 to-indigo-900 rounded-2xl p-4 text-white">
+      <div className="bg-gradient-to-r text-center from-indigo-700 to-indigo-900 rounded-2xl p-4 text-white">
         <h1 className="text-lg font-bold">
-          {getGreeting()}, {user?.name || user?.username || 'usuario'}! 👋
+          {getGreeting()}, {user?.name || user?.username || 'usuario'}! 
         </h1>
         <p className="text-indigo-200 text-sm">Resumen de finanzas para {months[month - 1]} {year}</p>
-        <div className="flex gap-2 mt-3">
+        <div className="flex justify-center items-center gap-2 mt-3">
           <select
             value={month}
             onChange={(e) => setMonth(parseInt(e.target.value))}
@@ -319,7 +319,7 @@ const Dashboard = () => {
       {/* Goals Section */}
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-base font-bold text-gray-900 dark:text-white">🎯 Progreso de Metas</h2>
+          <h2 className="text-base font-bold text-gray-900 dark:text-white"> Progreso de Metas</h2>
           <Link to="/goals" className="text-indigo-600 dark:text-indigo-400 text-xs font-medium">Ver todas →</Link>
         </div>
 

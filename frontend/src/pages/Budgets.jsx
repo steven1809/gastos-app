@@ -317,83 +317,102 @@ const Budgets = () => {
   const overallStatus = getOverallStatus();
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 px-4 sm:px-6">
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
       {successMessage && (
         <Alert type="success" message={successMessage} onClose={() => setSuccessMessage(null)} />
       )}
 
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Gastos Fijos</h1>
-        <div className="flex gap-3 items-center flex-wrap">
-          <MonthPicker
-            month={selectedMonth}
-            year={selectedYear}
-            onChange={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
-          />
-          <Button onClick={() => handleOpenModal()}>+ Nuevo Presupuesto</Button>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold text-gray-900 text-center p-4 dark:text-white">Mis Gastos Fijos</h1>
+        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => {
+                const prev = new Date(selectedYear, selectedMonth - 2);
+                setSelectedMonth(prev.getMonth() + 1);
+                setSelectedYear(prev.getFullYear());
+              }}
+              className="w-12 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              ←
+            </button>
+            <span className="text-lg font-semibold text-gray-900 dark:text-white min-w-[120px] text-center">
+              {getMonthName(selectedMonth)} {selectedYear}
+            </span>
+            <button 
+              onClick={() => {
+                const next = new Date(selectedYear, selectedMonth);
+                setSelectedMonth(next.getMonth() + 1);
+                setSelectedYear(next.getFullYear());
+              }}
+              className="w-12 h-12 rounded-xl border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              →
+            </button>
+          </div>
+          <Button onClick={() => handleOpenModal()} className="border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            + Nuevo Presupuesto
+          </Button>
         </div>
       </div>
 
       {status && (
-        <Card className={`${overallStatus.bg} dark:${overallStatus.bg.replace('bg-', 'bg-')}`}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Resumen del mes</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                {formatAmount(overallStatus.totalPaid)} pagado de {formatAmount(overallStatus.totalBudgeted)}
-              </p>
-              <p className="text-2xl font-bold mt-2">{overallStatus.text}</p>
-              {overallStatus.remaining > 0 && (
-                <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 mt-1">
-                  Falta: {formatAmount(overallStatus.remaining)}
-                </p>
-              )}
-            </div>
-            <div className="lg:col-span-2">
-              <ProgressBar
-                percentage={overallStatus.totalBudgeted > 0 ? (overallStatus.totalPaid / overallStatus.totalBudgeted) * 100 : 0}
-                showLabel={false}
-                height="h-5"
-              />
+        <div className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Resumen del mes</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-2">
+            {formatAmount(overallStatus.totalPaid)} pagado de {formatAmount(overallStatus.totalBudgeted)}
+          </p>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-lg">{overallStatus.icon}</span>
+            <p className="text-xl font-bold text-amber-600 dark:text-yellow-400">{overallStatus.text}</p>
+          </div>
+          {overallStatus.remaining > 0 && (
+            <p className="text-gray-600 dark:text-gray-400 text-base">
+              Falta: {formatAmount(overallStatus.remaining)}
+            </p>
+          )}
+          <div className="mt-4">
+            <div className="w-full bg-blue-200 dark:bg-blue-900/50 rounded-full h-3">
+              <div
+                className="h-3 rounded-full transition-all duration-300 bg-blue-500"
+                style={{ width: `${overallStatus.totalBudgeted > 0 ? Math.min(100, (overallStatus.totalPaid / overallStatus.totalBudgeted) * 100) : 0}%` }}
+              ></div>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-4">
+        <h3 className="text-base font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Presupuestos</h3>
         {loading ? (
-          Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="h-32 bg-gray-200 rounded-lg"></div>
-            </Card>
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30 animate-pulse">
+              <div className="h-32"></div>
+            </div>
           ))
         ) : (
           budgets.map(budget => {
             const cat = budget.Category || categories.find(c => c.id === Number(budget.categoryId));
             const isExceeded = budget.percentage_used > 100;
             const fixedStatus = budget.isFixed ? getFixedExpenseStatus(budget) : null;
+            const percentage = Math.min(100, budget.percentage_used);
 
             return (
-              <Card key={budget.id} className={isExceeded ? 'border-2 border-red-300 dark:border-red-700' : ''}>
-                {isExceeded && (
-                  <div className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-xl font-semibold">
-                    ¡Presupuesto excedido por {formatAmount(budget.spent - budget.amount)}!
-                  </div>
-                )}
-            <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {cat && (
-                      <Badge color={cat.color}>{cat.name}</Badge>
-                    )}
-                    {!cat && (
-                      <span className="text-sm text-gray-500 dark:text-gray-400">Sin categoría</span>
-                    )}
-                  </div>
-                  <div className="flex gap-1">
+              <div key={budget.id} className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30">
+                <div className="flex items-center justify-between mb-4">
+                  {cat && (
+                    <span className="px-4 py-1.5 rounded-full text-sm font-semibold text-white" style={{ backgroundColor: cat.color || '#7c2d12' }}>
+                      {cat.name}
+                    </span>
+                  )}
+                  {!cat && (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Sin categoría</span>
+                  )}
+                  <div className="flex gap-2">
                     <button
                       onClick={() => handleOpenModal(budget)}
-                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 p-1"
+                      className="w-12 h-12 rounded-xl border-2 border-gray-400 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                     >
                       ✏️
                     </button>
@@ -402,88 +421,61 @@ const Budgets = () => {
                         setBudgetToDelete(budget);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 p-1"
+                      className="w-12 h-12 rounded-xl border-2 border-gray-400 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                     >
                       🗑️
                     </button>
                   </div>
                 </div>
                 
-                {budget.isFixed ? (
-                  <div className="space-y-3">
-                    {fixedStatus && (
-                      <div className="text-center">
-                        <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold ${fixedStatus.color}`}>
-                          {fixedStatus.icon} {fixedStatus.text}
-                        </span>
-                      </div>
-                    )}
-                    <div className="text-center">
-                      <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {Math.min(100, budget.percentage_used).toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                      <div
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          Math.min(100, budget.percentage_used) >= 100 ? 'bg-green-500' : 
-                          Math.min(100, budget.percentage_used) === 0 ? 'bg-red-500' : 
-                          'bg-yellow-500'
-                        }`}
-                        style={{ width: `${Math.min(100, budget.percentage_used)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-center text-gray-700 dark:text-gray-300 text-sm">
-                      {formatAmount(budget.spent)} pagado de {formatAmount(budget.amount)}
-                    </p>
-                    {budget.percentage_used < 100 && (
-                      <p className="text-center text-gray-500 dark:text-gray-400 text-xs">
-                        Falta: {formatAmount(fixedStatus?.remaining || 0)}
-                      </p>
-                    )}
-                    <Button 
-                      onClick={() => handlePayFixedExpense(budget)}
-                      className="w-full mt-2"
-                      disabled={budget.spent >= budget.amount}
-                    >
-                      💳 {budget.spent >= budget.amount ? 'Pagado' : 'Pagar'}
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="text-center mb-4">
-                      <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                        {budget.percentage_used.toFixed(0)}%
-                      </span>
-                    </div>
-                    <ProgressBar percentage={budget.percentage_used} height="h-4" />
-                    <p className="text-center mt-3 text-gray-700 dark:text-gray-300">
-                      {formatAmount(budget.spent)} gastado de {formatAmount(budget.amount)}
-                    </p>
-                  </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="px-4 py-1.5 rounded-full text-sm font-semibold text-amber-700 dark:text-orange-400 bg-amber-100 dark:bg-orange-900/30">
+                    {fixedStatus?.icon} {fixedStatus?.text || 'Sin pagar'}
+                  </span>
+                  <span className="text-2xl font-bold text-gray-900 dark:text-white ml-auto">{percentage.toFixed(0)}%</span>
+                </div>
+                
+                <div className="w-full bg-blue-200 dark:bg-blue-900/50 rounded-full h-3 mb-4">
+                  <div
+                    className={`h-3 rounded-full transition-all duration-300 ${
+                      percentage >= 100 ? 'bg-green-500' : 
+                      percentage === 0 ? 'bg-red-500' : 
+                      'bg-yellow-500'
+                    }`}
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                
+                <p className="text-gray-600 dark:text-gray-400 text-base mb-1">
+                  {formatAmount(budget.spent)} pagado de {formatAmount(budget.amount)}
+                </p>
+                {budget.percentage_used < 100 && (
+                  <p className="text-gray-500 dark:text-gray-500 text-sm mb-4">
+                    Falta: {formatAmount(fixedStatus?.remaining || 0)}
+                  </p>
                 )}
-              </Card>
+                
+                <button
+                  onClick={() => handlePayFixedExpense(budget)}
+                  disabled={budget.spent >= budget.amount}
+                  className="w-full py-3 rounded-xl border-2 border-gray-400 dark:border-gray-600 text-gray-900 dark:text-white font-semibold text-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {budget.spent >= budget.amount ? '✅ Pagado' : 'Pagar'}
+                </button>
+              </div>
             );
           })
         )}
       </div>
 
       {!loading && budgets.length === 0 && (
-        <Card>
+        <div className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30">
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">No tienes presupuestos configurados</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">No tienes presupuestos configurados</p>
             <Button onClick={() => handleOpenModal()}>Crear tu primer presupuesto</Button>
           </div>
-        </Card>
+        </div>
       )}
-
-      {/* Floating button for mobile */}
-      <button
-        onClick={() => setModalOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-xl flex items-center justify-center text-3xl z-40 active:scale-95 transition-transform md:hidden"
-      >
-        +
-      </button>
 
       {modalOpen && (
         <Modal
