@@ -42,9 +42,23 @@ export const CurrencyProvider = ({ children }) => {
     }
   }
 
-  const formatAmount = (amountInCOP) => {
+  const formatAmount = (amountInCOP, abbreviate = false) => {
     const rate = rates[currency] || 1
     const converted = amountInCOP * rate
+
+    // For very large numbers, optionally abbreviate
+    if (abbreviate && Math.abs(converted) >= 1000000) {
+      const suffixes = ['', 'k', 'M', 'B', 'T']
+      const magnitude = Math.floor(Math.log10(Math.abs(converted)) / 3)
+      const scaled = converted / Math.pow(1000, magnitude)
+      
+      const formatters = {
+        COP: (num) => `$${num.toFixed(1)}${suffixes[magnitude]}`,
+        USD: (num) => `$${num.toFixed(2)}${suffixes[magnitude]}`,
+        EUR: (num) => `${num.toFixed(2)}€${suffixes[magnitude]}`
+      }
+      return formatters[currency]?.(scaled) || formatters.COP(scaled)
+    }
 
     const formatters = {
       COP: new Intl.NumberFormat('es-CO', {

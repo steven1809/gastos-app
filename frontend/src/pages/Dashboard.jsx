@@ -18,6 +18,7 @@ import goalService from '../services/goal.service';
 import reportService from '../services/report.service';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { useTheme } from '../context/ThemeContext';
 import Card from '../components/common/Card';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
@@ -38,6 +39,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { formatAmount } = useCurrency();
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -100,7 +102,6 @@ const Dashboard = () => {
   useEffect(() => {
     loadData();
   }, [month, year]);
-
 
 
   const getFixedExpenseStatus = (budget) => {
@@ -247,348 +248,230 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Saludo - todo el ancho */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-2 border-indigo-200 dark:border-indigo-700 rounded-xl p-4 md:p-6 text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+    <div className="p-4 space-y-4 bg-white dark:bg-gray-950 min-h-screen">
+      {/* Saludo y selectores */}
+      <div className="bg-gradient-to-r from-indigo-700 to-indigo-900 rounded-2xl p-4 text-white">
+        <h1 className="text-lg font-bold">
           {getGreeting()}, {user?.name || user?.username || 'usuario'}! 👋
         </h1>
-        <p className="text-gray-600 dark:text-gray-300 mt-2 text-base md:text-lg">
-          Aquí tienes el resumen de tus finanzas para {months[month - 1]} {year}
-        </p>
+        <p className="text-indigo-200 text-sm">Resumen de finanzas para {months[month - 1]} {year}</p>
+        <div className="flex gap-2 mt-3">
+          <select
+            value={month}
+            onChange={(e) => setMonth(parseInt(e.target.value))}
+            className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-indigo-400 text-sm w-full max-w-[150px]"
+          >
+            {months.map((m, idx) => (
+              <option key={idx + 1} value={idx + 1}>{m}</option>
+            ))}
+          </select>
+          <select
+            value={year}
+            onChange={(e) => setYear(parseInt(e.target.value))}
+            className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-indigo-400 text-sm w-full max-w-[150px]"
+          >
+            {[2023, 2024, 2025, 2026].map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Selectores de mes/año - centrados */}
-      <div className="flex justify-center gap-2 md:gap-3">
-        <select
-          value={month}
-          onChange={(e) => setMonth(parseInt(e.target.value))}
-          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
-        >
-          {months.map((m, idx) => (
-            <option key={idx + 1} value={idx + 1}>{m}</option>
-          ))}
-        </select>
-        <select
-          value={year}
-          onChange={(e) => setYear(parseInt(e.target.value))}
-          className="px-3 md:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 text-base min-h-[44px]"
-        >
-          {[2023, 2024, 2025, 2026].map(y => (
-            <option key={y} value={y}>{y}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Tarjetas de estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border border-green-200 dark:border-green-700 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-green-700 dark:text-green-300 font-medium mb-1 text-sm">Total Ingresos</p>
-              <p className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-200">{formatAmount(summary?.totalIncome || 0)}</p>
-            </div>
-            <div className="bg-green-500 rounded-full p-2 md:p-3">
-              <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Tarjetas de ingresos, gastos y balance */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-gradient-to-br from-green-500 to-green-700 dark:from-green-800 dark:to-green-900 rounded-2xl p-4 text-white shadow-md overflow-hidden">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-green-100 dark:text-green-300 text-xs font-medium">Total Ingresos</p>
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
           </div>
-        </Card>
+          <p className="text-xl md:text-2xl font-bold text-center">{formatAmount(summary?.totalIncome || 0)}</p>
+        </div>
 
-        <Card className="bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 border border-red-200 dark:border-red-700 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-red-700 dark:text-red-300 font-medium mb-1 text-sm">Total Gastos</p>
-              <p className="text-2xl md:text-3xl font-bold text-red-800 dark:text-red-200">{formatAmount(summary?.totalExpenses || 0)}</p>
-            </div>
-            <div className="bg-red-500 rounded-full p-2 md:p-3">
-              <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-gradient-to-br from-red-500 to-red-700 dark:from-red-800 dark:to-red-900 rounded-2xl p-4 text-white shadow-md overflow-hidden">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-red-100 dark:text-red-300 text-xs font-medium">Total Gastos</p>
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
               </svg>
             </div>
           </div>
-        </Card>
+          <p className="text-xl md:text-2xl font-bold text-center">{formatAmount(summary?.totalExpenses || 0)}</p>
+        </div>
 
-        <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 border border-indigo-200 dark:border-indigo-700 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-indigo-700 dark:text-indigo-300 font-medium mb-1 text-sm">Balance</p>
-              <p className={`text-2xl md:text-3xl font-bold ${(summary?.balance || 0) >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>{formatAmount(summary?.balance || 0)}</p>
-            </div>
-            <div className="bg-indigo-500 rounded-full p-2 md:p-3">
-              <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="col-span-2 bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-800 dark:to-blue-900 rounded-2xl p-4 text-white shadow-md overflow-hidden">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-blue-100 dark:text-blue-300 text-xs font-medium">Balance</p>
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
-        </Card>
-
-        {dashboardSummary.totalBudgeted > 0 && (
-          <Card className={
-            dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted 
-              ? 'bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border border-green-200 dark:border-green-700' 
-              : dashboardSummary.totalPaid > 0 
-                ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 border border-yellow-200 dark:border-yellow-700' 
-                : 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 border border-red-200 dark:border-red-700'
-          } p-4>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`font-medium mb-1 text-sm`} style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
-                  {dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? 'Todo pagado' : dashboardSummary.totalPaid > 0 ? 'Falta pagar' : 'Sin pagos'}
-                </p>
-                <p className="text-xl md:text-2xl font-bold" style={{ color: dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted ? '#15803d' : dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
-                  {formatAmount(dashboardSummary.totalPaid)} / {formatAmount(dashboardSummary.totalBudgeted)}
-                </p>
-                {dashboardSummary.remaining > 0 && (
-                  <p className="text-xs md:text-sm font-semibold mt-1" style={{ color: dashboardSummary.totalPaid > 0 ? '#854d0e' : '#991b1c' }}>
-                    Falta: {formatAmount(dashboardSummary.remaining)}
-                  </p>
-                )}
-              </div>
-              <div className={
-                dashboardSummary.totalPaid >= dashboardSummary.totalBudgeted 
-                  ? 'bg-green-500 rounded-full p-2 md:p-3' 
-                  : dashboardSummary.totalPaid > 0 
-                    ? 'bg-yellow-500 rounded-full p-2 md:p-3' 
-                    : 'bg-red-500 rounded-full p-2 md:p-3'
-              }>
-                <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </Card>
-        )}
+          <p className="text-xl md:text-2xl font-bold text-center">{formatAmount(summary?.balance || 0)}</p>
+        </div>
       </div>
 
       {/* Goals Section */}
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">🎯 Progreso de Metas</h2>
-          <Link to="/goals" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-sm">Ver todas →</Link>
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-base font-bold text-gray-900 dark:text-white">🎯 Progreso de Metas</h2>
+          <Link to="/goals" className="text-indigo-600 dark:text-indigo-400 text-xs font-medium">Ver todas →</Link>
         </div>
 
         {activeGoals.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {activeGoals.slice(0, 3).map((goal) => {
               const percentage = Math.min(100, goal.percentage || 0);
               
               return (
-                <Card key={goal.id} className="p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div key={goal.id} className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{goal.icon}</span>
-                      <span className="font-medium text-gray-900 dark:text-white">{goal.name}</span>
+                      <span>{goal.icon}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-200 text-sm">{goal.name}</span>
                     </div>
-                    <span className="font-bold text-gray-900 dark:text-white">{Math.round(percentage)}%</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-200 text-sm">{Math.round(percentage)}%</span>
                   </div>
                   
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-1">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-1">
                     <div
-                      className={`h-2.5 rounded-full transition-all duration-300 ${getProgressBarColor(percentage)}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${getProgressBarColor(percentage)}`}
                       style={{ width: `${percentage}%` }}
                     ></div>
                   </div>
                   
-                  <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                     <span>{formatAmount(goal.currentAmount || 0)} guardados</span>
                     <span>{formatAmount(goal.targetAmount)} objetivo</span>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
-        ) : (
-          <Card>
-            <div className="text-center py-8">
-              <p className="text-gray-600 dark:text-gray-300 mb-4">No tienes metas activas</p>
-              <Link to="/goals">
-                <Button>Crear tu primera meta</Button>
-              </Link>
-            </div>
-          </Card>
+        ) : null}
+      </div>
+
+      {/* Gastos por categoría - Gráfico donut */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+        <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Gastos por Categoría</h2>
+        <div style={{ maxWidth: '300px', margin: '0 auto', height: '200px' }}>
+          <Doughnut data={doughnutData()} options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { 
+                display: false 
+              } 
+            }
+          }} />
+        </div>
+        {(!summary?.byCategory || summary.byCategory.length === 0) && (
+          <p className="text-center text-gray-500 dark:text-gray-400 text-sm mt-2">Sin gastos</p>
         )}
       </div>
 
-      {/* Recordatorios - como cards individuales */}
-      {fixedExpenses.length > 0 && (
-        <div>
-          <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">📌 Recordatorios</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {fixedExpenses
-              .sort((a, b) => a.dueDay - b.dueDay)
-              .map((budget) => {
-                const cat = categories.find(c => c.id === budget.categoryId) || budget.Category;
-                const status = getFixedExpenseStatus(budget);
-                const percentagePaid = Math.min(100, (budget.spent || 0) / budget.amount * 100);
-                
-                const getCardBg = () => {
-                  if (percentagePaid >= 100) return 'bg-green-50 border-green-200';
-                  if (percentagePaid === 0) return 'bg-red-50 border-red-200';
-                  return 'bg-yellow-50 border-yellow-200';
-                };
-                
-                return (
-                  <Card key={budget.id} className={`${getCardBg()} p-4`}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        {cat && <Badge className="text-xs px-2 py-0.5">{cat.name}</Badge>}
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status.color}`}>
-                          {status.icon} {status.text}
-                        </span>
-                      </div>
-                      <span className="text-base md:text-lg font-bold text-gray-900">{formatAmount(budget.amount)}</span>
-                    </div>
-                    
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                      <div
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          percentagePaid >= 100 ? 'bg-green-500' : 
-                          percentagePaid === 0 ? 'bg-red-500' : 
-                          'bg-yellow-500'
-                        }`}
-                        style={{ width: `${percentagePaid}%` }}
-                      ></div>
-                    </div>
-                    
-                    <div className="flex justify-between text-xs md:text-sm text-gray-600 mb-3">
-                      <span>Pagado: {formatAmount(budget.spent || 0)}</span>
-                      {percentagePaid < 100 && (
-                        <span>Falta: {formatAmount(status.remaining)}</span>
-                      )}
-                    </div>
-                    
-                    {!status.isPaid && (
-                      <Button 
-                        size="sm"
-                        onClick={() => handlePayFixedExpense(budget)}
-                        className="w-full min-h-[44px]"
-                      >
-                        💳 Pagar
-                      </Button>
-                    )}
-                    
-                    {status.isPaid && (
-                      <div className="text-center py-2">
-                        <span className="text-green-600 font-semibold text-sm">✅ Completado</span>
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-          </div>
+      {/* Ingresos vs Gastos - Gráfico de barras */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+        <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">Ingresos vs Gastos - últimos 6 meses</h2>
+        <div style={{ height: '200px' }}>
+          <Bar data={barData()} options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { 
+                position: 'top',
+                labels: { 
+                  color: theme === 'dark' ? '#e5e7eb' : '#1f2937', 
+                  boxWidth: 10, 
+                  padding: 8, 
+                  font: { size: 10 }
+                } 
+              } 
+            },
+            scales: {
+              x: {
+                ticks: { color: theme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 10 } },
+                grid: { color: theme === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(209, 213, 219, 0.3)' }
+              },
+              y: {
+                ticks: { color: theme === 'dark' ? '#9ca3af' : '#4b5563', font: { size: 10 } },
+                grid: { color: theme === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(209, 213, 219, 0.3)' }
+              }
+            }
+          }} />
         </div>
-      )}
-
-      {/* Gráficas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <Card title="Gastos por Categoría">
-          <div style={{ maxWidth: '400px', margin: '0 auto', height: '200px', md: { height: '300px' } }}>
-            <Doughnut data={doughnutData()} options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 8, font: { size: 11 } } } }
-            }} />
-          </div>
-        </Card>
-        <Card title="Ingresos vs Gastos - Últimos 6 Meses">
-          <div style={{ height: '200px', md: { height: '300px' } }}>
-            <Bar data={barData()} options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 11 } } } }
-            }} />
-          </div>
-        </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <Card title="Transacciones Recientes" action={<Link to="/transactions" className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Ver todas →</Link>}>
-          <div className="space-y-3">
-            {recentTransactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                  <span className="text-xs md:text-sm text-gray-500 w-16 md:w-24 flex-shrink-0">{tx.date}</span>
-                  {tx.isGoalContribution ? (
-                    <Badge color="#6366f1" className="flex-shrink-0">🎯 Meta</Badge>
-                  ) : tx.Category ? (
-                    <Badge color={tx.Category.color} className="flex-shrink-0">{tx.Category.name}</Badge>
-                  ) : null}
-                  <span className="text-gray-700 text-xs md:text-sm truncate">{tx.description}</span>
-                </div>
-                <div className="flex-shrink-0 ml-2">
-                  <span className={`font-semibold text-xs md:text-sm ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                    {tx.type === 'income' ? '+' : '-'}{formatAmount(tx.amount)}
-                  </span>
-                </div>
-              </div>
-            ))}
-            {!recentTransactions?.length && (
-              <p className="text-gray-500 text-center py-8 text-sm">No hay transacciones recientes</p>
-            )}
-          </div>
-        </Card>
-
-        <Card title="Estado del Presupuesto">
-          <div className="space-y-3 md:space-y-4">
-            {budgetStatus?.budgets?.map((budget) => {
-              const percentageUsed = Math.min(100, budget.percentage_used);
-              const remaining = budget.amount - (budget.spent || 0);
-              
-              const getStatusBg = () => {
-                if (percentageUsed >= 100) return 'bg-green-100 border-green-200';
-                if (percentageUsed === 0) return 'bg-red-100 border-red-200';
-                return 'bg-yellow-100 border-yellow-200';
-              };
-              
-              const getStatusIcon = () => {
-                if (percentageUsed >= 100) return '✅';
-                if (percentageUsed === 0) return '⚠️';
-                return '💰';
-              };
-              
-              const getStatusText = () => {
-                if (percentageUsed >= 100) return 'Pagado';
-                if (percentageUsed === 0) return 'Sin pagar';
-                return `Falta ${formatAmount(remaining)}`;
-              };
-              
-              const getProgressColor = () => {
-                if (percentageUsed >= 100) return 'bg-green-500';
-                if (percentageUsed === 0) return 'bg-red-500';
-                return 'bg-yellow-500';
-              };
-              
-              return (
-                <div key={budget.id} className={`p-3 md:p-4 rounded-lg border ${getStatusBg()}`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge color={budget.Category?.color || '#6366f1'} className="text-xs">{budget.Category?.name || 'General'}</Badge>
-                      <span className="text-xs md:text-sm font-semibold">{getStatusIcon()} {getStatusText()}</span>
+      {/* Transacciones Recientes */}
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-base font-bold text-gray-900 dark:text-white">Transacciones Recientes</h2>
+          <Link to="/transactions" className="text-indigo-600 dark:text-indigo-400 text-xs font-medium">Ver todas →</Link>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+          {recentTransactions.length > 0 ? (
+            <div className="space-y-3">
+              {recentTransactions.map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-0">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 w-12 flex-shrink-0">{tx.date}</div>
+                    <div className="flex-1 min-w-0">
+                      {tx.isGoalContribution ? (
+                        <span className="text-xs text-gray-700 dark:text-gray-200">🎯 Meta</span>
+                      ) : tx.Category ? (
+                        <span className="text-xs text-gray-700 dark:text-gray-200">{tx.Category.name}</span>
+                      ) : null}
+                      <p className="text-xs text-gray-600 dark:text-gray-300 truncate">{tx.description}</p>
                     </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className={`h-2.5 rounded-full ${getProgressColor()}`}
-                      style={{ width: `${percentageUsed}%` }}
-                    ></div>
+                  <div className="flex-shrink-0 ml-2">
+                    <span className={`font-semibold text-xs ${tx.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {tx.type === 'income' ? '+' : '-'}{formatAmount(tx.amount)}
+                    </span>
                   </div>
-                  <div className="flex justify-between text-xs md:text-sm mt-2">
-                    <span className="text-gray-600">{formatAmount(budget.spent || 0)} pagado</span>
-                    <span className="font-medium text-gray-900">{formatAmount(budget.amount)} total</span>
-                  </div>
-                  {percentageUsed < 100 && (
-                    <p className="text-right text-xs text-gray-500 mt-1">Falta: {formatAmount(remaining)}</p>
-                  )}
                 </div>
-              );
-            })}
-            {!budgetStatus?.budgets?.length && (
-              <p className="text-gray-500 text-center py-8 text-sm">No hay presupuestos configurados</p>
-            )}
-          </div>
-        </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8 text-sm">No hay transacciones recientes</p>
+          )}
+        </div>
+      </div>
+
+      {/* Estado del Presupuesto */}
+      <div>
+        <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">Estado del Presupuesto</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+          {budgetStatus?.budgets?.length > 0 ? (
+            <div className="space-y-3">
+              {budgetStatus.budgets.map((budget) => {
+                const percentageUsed = Math.min(100, budget.percentage_used);
+                
+                return (
+                  <div key={budget.id}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs text-gray-700 dark:text-gray-300">{budget.Category?.name || 'General'}</span>
+                      <span className="text-xs text-gray-700 dark:text-gray-300">{Math.round(percentageUsed)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all duration-300 ${percentageUsed >= 100 ? 'bg-green-500' : percentageUsed >= 70 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        style={{ width: `${percentageUsed}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8 text-sm">No hay presupuestos configurados</p>
+          )}
+        </div>
       </div>
     </div>
   );

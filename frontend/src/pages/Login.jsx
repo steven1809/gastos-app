@@ -14,9 +14,57 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({ email: '', password: '' });
+  const [touched, setTouched] = useState({ email: false, password: false });
+
+  const validateEmail = (value) => {
+    if (!value) return 'El email es obligatorio';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Ingresa un email válido';
+    return '';
+  };
+
+  const validatePassword = (value) => {
+    if (!value) return 'La contraseña es obligatoria';
+    if (value.length < 6) return 'La contraseña debe tener al menos 6 caracteres';
+    return '';
+  };
+
+  const handleEmailBlur = () => {
+    setTouched(prev => ({ ...prev, email: true }));
+    setErrors(prev => ({ ...prev, email: validateEmail(email) }));
+  };
+
+  const handlePasswordBlur = () => {
+    setTouched(prev => ({ ...prev, password: true }));
+    setErrors(prev => ({ ...prev, password: validatePassword(password) }));
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (touched.email) {
+      setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (touched.password) {
+      setErrors(prev => ({ ...prev, password: validatePassword(value) }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setTouched({ email: true, password: true });
+    const newErrors = {
+      email: validateEmail(email),
+      password: validatePassword(password)
+    };
+    setErrors(newErrors);
+    if (Object.values(newErrors).some(e => e)) return;
+
     setLoading(true);
     setError(null);
 
@@ -25,20 +73,44 @@ const Login = () => {
       login(data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al iniciar sesión');
+      const errCode = err.response?.data?.error;
+      let errMessage = 'Email o contraseña incorrectos. Verifica tus datos.';
+      if (errCode === 'user_not_found') {
+        errMessage = 'No encontramos una cuenta con ese email.';
+      } else if (errCode === 'account_disabled') {
+        errMessage = 'Tu cuenta ha sido desactivada. Contacta al administrador.';
+      }
+      setError(errMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  const isEmailValid = touched.email && !errors.email;
+  const isPasswordValid = touched.password && !errors.password;
+  const isFormValid = !errors.email && !errors.password && email && password;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 py-12 px-4 sm:px-6 lg:px-8">
       {error && (
-        <Alert
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 shadow-lg">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+              <button
+                onClick={() => setError(null)}
+                className="ml-auto text-red-400 hover:text-red-600"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       
       <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8">
@@ -48,15 +120,30 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@email.com"
-            required
-          />
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
+              placeholder="tu@email.com"
+              className={`block w-full rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white pl-4 pr-4 py-2.5 sm:text-sm transition-colors ${
+                errors.email && touched.email
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                  : isEmailValid
+                  ? 'border-green-500 focus:border-green-500 focus:ring-green-500'
+                  : 'border-gray-300 dark:border-gray-700 focus:border-indigo-500 focus:ring-indigo-500'
+              }`}
+            />
+            {errors.email && touched.email && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+            )}
+          </div>
           
           <div className="mb-4">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -68,10 +155,16 @@ const Login = () => {
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
+                onBlur={handlePasswordBlur}
                 placeholder="••••••••"
-                required
-                className="block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-12 py-2.5 sm:text-sm"
+                className={`block w-full rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white pl-4 pr-12 py-2.5 sm:text-sm transition-colors ${
+                  errors.password && touched.password
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : isPasswordValid
+                    ? 'border-green-500 focus:border-green-500 focus:ring-green-500'
+                    : 'border-gray-300 dark:border-gray-700 focus:border-indigo-500 focus:ring-indigo-500'
+                }`}
               />
               <button
                 type="button"
@@ -90,12 +183,16 @@ const Login = () => {
                 </svg>
               </button>
             </div>
+            {errors.password && touched.password && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
+            )}
           </div>
 
           <Button
             type="submit"
             loading={loading}
-            className="w-full bg-gradient-to-br via-green-500 to-yellow-500 hover:bg-gradient-to-bl from-green-500 via-yellow-500"
+            disabled={!isFormValid || loading}
+            className="w-full bg-gradient-to-br via-green-500 to-yellow-500 hover:bg-gradient-to-bl from-green-500 via-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Iniciar sesión
           </Button>

@@ -77,12 +77,12 @@ const FloatingChatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex flex-col-reverse gap-3">
+    <div className="fixed bottom-6 left-6 z-30 flex flex-col-reverse gap-3">
       {/* Mobile Fullscreen */}
       {isOpen && (
         <>
           {/* Mobile: Fullscreen */}
-          <div className="fixed inset-0 bg-white dark:bg-gray-900 md:hidden flex flex-col z-[9999]">
+          <div className="fixed inset-0 bg-white dark:bg-gray-900 md:hidden flex flex-col z-50">
             {/* Mobile Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-3 flex items-center justify-between">
               <button
@@ -177,7 +177,7 @@ const FloatingChatbot = () => {
           </div>
 
           {/* Desktop: Floating Window */}
-          <div className="hidden md:flex bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden w-96 h-[600px] flex-col border border-gray-200 dark:border-gray-700">
+          <div className="hidden md:flex bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden w-96 h-[600px] flex-col border border-gray-200 dark:border-gray-700 z-40">
             {/* Desktop Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-3 flex justify-between items-center">
               <div className="flex items-center gap-2">

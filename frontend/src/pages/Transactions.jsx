@@ -147,153 +147,175 @@ const Transactions = () => {
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount), 0);
   const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount), 0);
 
+  // Group transactions by month/year for mobile view
+  const groupTransactionsByMonth = () => {
+    const groups = {};
+    transactions.forEach(t => {
+      const date = new Date(t.date);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!groups[monthKey]) {
+        groups[monthKey] = [];
+      }
+      groups[monthKey].push(t);
+    });
+    return groups;
+  };
+
+  const getMonthName = (monthKey) => {
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const [year, month] = monthKey.split('-');
+    return `${months[parseInt(month) - 1]} ${year}`;
+  };
+
+  const groupedTransactions = groupTransactionsByMonth();
+
   return (
-    <div className="space-y-6">
+    <div className="p-4 space-y-4">
       {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
       {successMessage && (
         <Alert type="success" message={successMessage} onClose={() => setSuccessMessage(null)} />
       )}
 
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Transacciones</h1>
-        <Button onClick={handleAddTransaction}>+ Nueva Transacción</Button>
-      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Transacciones</h1>
+          <Button onClick={handleAddTransaction} className="w-full md:w-auto">+ Nueva Transacción</Button>
+        </div>
 
-      <div className="flex gap-3 flex-wrap">
-        <button
-          onClick={() => setFilters({ ...filters, type: '' })}
-          className={`px-4 py-2 rounded-lg border transition-colors ${!filters.type ? 'bg-indigo-100 dark:bg-indigo-900/30 border-indigo-500 text-indigo-700 dark:text-indigo-300' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-        >
-          Todos
-        </button>
-        <button
-          onClick={() => setFilters({ ...filters, type: 'income' })}
-          className={`px-4 py-2 rounded-lg border transition-colors ${filters.type === 'income' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700 dark:text-green-300' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-        >
-          Ingresos
-        </button>
-        <button
-          onClick={() => setFilters({ ...filters, type: 'expense' })}
-          className={`px-4 py-2 rounded-lg border transition-colors ${filters.type === 'expense' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 text-red-700 dark:text-red-300' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-        >
-          Gastos
-        </button>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          🔍 Filtros
-        </button>
-      </div>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            onClick={() => setFilters({ ...filters, type: '' })}
+            className={`px-4 py-2 rounded-xl border transition-all ${!filters.type ? 'bg-gradient-to-r from-indigo-500 to-indigo-700 text-white border-transparent shadow-md' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setFilters({ ...filters, type: 'income' })}
+            className={`px-4 py-2 rounded-xl border transition-all ${filters.type === 'income' ? 'bg-gradient-to-r from-green-500 to-green-700 text-white border-transparent shadow-md' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+          >
+            Ingresos
+          </button>
+          <button
+            onClick={() => setFilters({ ...filters, type: 'expense' })}
+            className={`px-4 py-2 rounded-xl border transition-all ${filters.type === 'expense' ? 'bg-gradient-to-r from-red-500 to-red-700 text-white border-transparent shadow-md' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+          >
+            Gastos
+          </button>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`px-4 py-2 rounded-xl border transition-all ${showFilters ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white border-transparent shadow-md' : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+          >
+            🔍 Filtros
+          </button>
+        </div>
 
-      {showFilters && (
-        <Card>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
-              <select
-                value={filters.categoryId}
-                onChange={(e) => setFilters({ ...filters, categoryId: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Todas</option>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
+        {showFilters && (
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 mb-4 border border-gray-200 dark:border-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
+                <select
+                  value={filters.categoryId}
+                  onChange={(e) => setFilters({ ...filters, categoryId: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Todas</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha desde</label>
+                <input
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha hasta</label>
+                <input
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto mínimo</label>
+                <input
+                  type="number"
+                  value={filters.minAmount}
+                  onChange={(e) => setFilters({ ...filters, minAmount: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto máximo</label>
+                <input
+                  type="number"
+                  value={filters.maxAmount}
+                  onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha desde</label>
-              <input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha hasta</label>
-              <input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto mínimo</label>
-              <input
-                type="number"
-                value={filters.minAmount}
-                onChange={(e) => setFilters({ ...filters, minAmount: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto máximo</label>
-              <input
-                type="number"
-                value={filters.maxAmount}
-                onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+            <Button variant="secondary" onClick={clearFilters} className="w-full md:w-auto">Limpiar filtros</Button>
           </div>
-          <Button variant="secondary" onClick={clearFilters}>Limpiar filtros</Button>
-        </Card>
-      )}
+        )}
 
-      <Card>
         {loading ? (
           <div className="flex justify-center py-12"><LoadingSpinner /></div>
         ) : (
           <>
             {/* Desktop: Table view */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
+              <table className="min-w-full">
+                <thead>
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-l-lg"
                       onClick={() => handleSort('date')}
                     >
                       Fecha {sortConfig.field === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Descripción
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Categoría
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
                     >
                       Tipo
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                       onClick={() => handleSort('amount')}
                     >
                       Monto {sortConfig.field === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+                      className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase rounded-r-lg"
                     >
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {transactions.map((transaction) => (
                     <TransactionRow
                       key={transaction.id}
@@ -307,60 +329,69 @@ const Transactions = () => {
             </div>
 
             {/* Mobile: Card view */}
-            <div className="md:hidden space-y-3">
-              {transactions.map((transaction) => {
-                const cat = transaction.Category || categories.find(c => c.id === Number(transaction.categoryId));
-                return (
-                  <div key={transaction.id} className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        {transaction.isGoalContribution ? (
-                          <span className="px-2 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: '#6366f1' }}>
-                            🎯 Meta
-                          </span>
-                        ) : (
-                          cat && (
-                            <span className="px-2 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: cat.color || '#6366f1' }}>
-                              {cat.name}
-                            </span>
-                          )
-                        )}
-                      </div>
-                      <span className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
-                      </span>
-                    </div>
-                    
-                    <p className="text-gray-800 dark:text-white font-medium mb-3">{transaction.description}</p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
-                        <span>📅</span>
-                        <span>{transaction.date}</span>
-                        {transaction.isGoalContribution && (
-                          <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">(Aporte a meta · no editable)</span>
-                        )}
-                      </div>
-                      {!transaction.isGoalContribution && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEditTransaction(transaction)}
-                            className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(transaction)}
-                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-                          >
-                            🗑️
-                          </button>
+            <div className="md:hidden space-y-4">
+              {Object.keys(groupedTransactions).length > 0 ? (
+                Object.keys(groupedTransactions).sort().reverse().map(monthKey => (
+                  <div key={monthKey} className="space-y-3">
+                    <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{getMonthName(monthKey)}</h3>
+                    {groupedTransactions[monthKey].map((transaction) => {
+                      const cat = transaction.Category || categories.find(c => c.id === Number(transaction.categoryId));
+                      return (
+                        <div key={transaction.id} className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                          <div className="flex items-start gap-3 mb-3">
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${transaction.type === 'income' ? 'bg-gradient-to-br from-green-400 to-green-600' : 'bg-gradient-to-br from-indigo-400 to-indigo-600'}`}>
+                                {transaction.isGoalContribution ? '🎯' : (cat?.icon || '💳')}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-gray-900 dark:text-white truncate">{transaction.description}</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {transaction.isGoalContribution ? (
+                                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-purple-500 to-purple-700">
+                                      Meta
+                                    </span>
+                                  ) : (
+                                    cat && (
+                                      <span className="px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: cat.color || '#6366f1' }}>
+                                        {cat.name}
+                                      </span>
+                                    )
+                                  )}
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">{transaction.date}</span>
+                                </div>
+                              </div>
+                              <span className={`text-lg md:text-xl font-bold break-all text-right ${transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
+                              </span>
+                            </div>
+                          
+                          {transaction.isGoalContribution && (
+                            <p className="text-xs text-gray-400 dark:text-gray-500 text-right">no editable</p>
+                          )}
+
+                          {!transaction.isGoalContribution && (
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200 dark:border-gray-700 mt-3">
+                              <button
+                                onClick={() => handleEditTransaction(transaction)}
+                                className="px-4 py-2 rounded-lg text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors min-h-[40px] flex items-center"
+                              >
+                                ✏️ Editar
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(transaction)}
+                                className="px-4 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors min-h-[40px] flex items-center"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                ))
+              ) : (
+                <p className="text-center py-12 text-gray-500 dark:text-gray-400">No hay transacciones para mostrar</p>
+              )}
             </div>
 
             {!loading && transactions.length === 0 && (
@@ -368,44 +399,42 @@ const Transactions = () => {
             )}
 
             {/* Desktop Pagination */}
-            <div className="hidden md:block px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex justify-between items-center">
-                <div className="flex gap-6">
-                  <span className="text-green-700 dark:text-green-400 font-semibold">
-                    Ingresos: {formatAmount(totalIncome)}
-                  </span>
-                  <span className="text-red-700 dark:text-red-400 font-semibold">
-                    Gastos: {formatAmount(totalExpenses)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Mostrando {(pagination.page - 1)*pagination.limit + 1}-{Math.min(pagination.page*pagination.limit, pagination.total || transactions.length)} de {pagination.total || transactions.length}
-                  </span>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={pagination.page <= 1}
-                      onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
-                    >
-                      Anterior
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={pagination.page >= pagination.totalPages}
-                      onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
-                    >
-                      Siguiente
-                    </Button>
-                  </div>
+            <div className="hidden md:flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+              <div className="flex gap-6">
+                <span className="text-green-700 dark:text-green-400 font-semibold">
+                  Ingresos: {formatAmount(totalIncome)}
+                </span>
+                <span className="text-red-700 dark:text-red-400 font-semibold">
+                  Gastos: {formatAmount(totalExpenses)}
+                </span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Mostrando {(pagination.page - 1)*pagination.limit + 1}-{Math.min(pagination.page*pagination.limit, pagination.total || transactions.length)} de {pagination.total || transactions.length}
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={pagination.page <= 1}
+                    onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
+                  >
+                    ← Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={pagination.page >= pagination.totalPages}
+                    onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
+                  >
+                    Siguiente →
+                  </Button>
                 </div>
               </div>
             </div>
 
             {/* Mobile Pagination */}
-            <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 px-4 space-y-3">
+            <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 space-y-3 mt-4">
               <p className="text-center text-gray-600 dark:text-gray-300 font-medium">Página {pagination.page} de {pagination.totalPages || 1}</p>
               <div className="flex gap-3">
                 <Button
@@ -414,7 +443,7 @@ const Transactions = () => {
                   disabled={pagination.page <= 1}
                   onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
                 >
-                  Anterior
+                  ← Anterior
                 </Button>
                 <Button
                   variant="secondary"
@@ -422,13 +451,13 @@ const Transactions = () => {
                   disabled={pagination.page >= pagination.totalPages}
                   onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
                 >
-                  Siguiente
+                  Siguiente →
                 </Button>
               </div>
             </div>
           </>
         )}
-      </Card>
+      </div>
 
       {modalOpen && (
         <TransactionForm
@@ -447,8 +476,8 @@ const Transactions = () => {
           title="Confirmar eliminación"
           size="sm"
         >
-          <p className="mb-4 text-gray-700">
-            ¿Estás seguro de eliminar la transacción: <strong>{transactionToDelete.description}</strong>?
+          <p className="mb-4 text-gray-700 dark:text-gray-300">
+            ¿Estás seguro de eliminar la transacción: <strong className="text-gray-900 dark:text-white">{transactionToDelete.description}</strong>?
           </p>
           <div className="flex gap-3 pt-4">
             <Button
