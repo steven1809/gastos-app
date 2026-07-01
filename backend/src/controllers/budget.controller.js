@@ -38,10 +38,13 @@ const getAll = async (req, res) => {
           budget.year,
           budget.categoryId
         );
+        const budgetAmount = parseFloat(budget.amount) || 0;
+        const spentAmount = parseFloat(spent) || 0;
         return {
           ...budget.toJSON(),
-          spent,
-          percentage_used: budget.amount > 0 ? (spent / budget.amount) * 100 : 0
+          amount: budgetAmount,
+          spent: spentAmount,
+          percentage_used: budgetAmount > 0 ? (spentAmount / budgetAmount) * 100 : 0
         };
       })
     );
@@ -138,11 +141,14 @@ const update = async (req, res) => {
       budget.year,
       budget.categoryId
     );
+    const budgetAmount = parseFloat(budget.amount) || 0;
+    const spentAmount = parseFloat(spent) || 0;
 
     res.json({
       ...updatedBudget.toJSON(),
-      spent,
-      percentage_used: budget.amount > 0 ? (spent / budget.amount) * 100 : 0
+      amount: budgetAmount,
+      spent: spentAmount,
+      percentage_used: budgetAmount > 0 ? (spentAmount / budgetAmount) * 100 : 0
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar presupuesto' });
@@ -202,15 +208,18 @@ const getMonthlyStatus = async (req, res) => {
           budget.year,
           budget.categoryId
         );
-        const remaining = budget.amount - spent;
-        const percentage_used = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+        const budgetAmount = parseFloat(budget.amount) || 0;
+        const spentAmount = parseFloat(spent) || 0;
+        const remaining = budgetAmount - spentAmount;
+        const percentage_used = budgetAmount > 0 ? (spentAmount / budgetAmount) * 100 : 0;
         let status = 'ok';
         if (percentage_used > 100) status = 'exceeded';
         else if (percentage_used > 80) status = 'warning';
 
         return {
           ...budget.toJSON(),
-          spent,
+          amount: budgetAmount,
+          spent: spentAmount,
           remaining,
           percentage_used,
           status
@@ -218,8 +227,8 @@ const getMonthlyStatus = async (req, res) => {
       })
     );
 
-    const totalBudgeted = budgets.reduce((sum, b) => sum + parseFloat(b.amount), 0);
-    const totalSpent = budgetsWithStatus.reduce((sum, b) => sum + b.spent, 0);
+    const totalBudgeted = budgetsWithStatus.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const totalSpent = budgetsWithStatus.reduce((sum, b) => sum + (b.spent || 0), 0);
 
     let overallStatus = 'ok';
     const overallPercentage = totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0;

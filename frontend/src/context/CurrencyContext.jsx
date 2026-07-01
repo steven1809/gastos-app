@@ -44,7 +44,8 @@ export const CurrencyProvider = ({ children }) => {
 
   const formatAmount = (amountInCOP, abbreviate = false) => {
     const rate = rates[currency] || 1
-    const converted = amountInCOP * rate
+    const validAmount = parseFloat(amountInCOP) || 0
+    const converted = validAmount * rate
 
     // For very large numbers, optionally abbreviate
     if (abbreviate && Math.abs(converted) >= 1000000) {

@@ -205,15 +205,15 @@ const Budgets = () => {
 
   const getOverallStatus = () => {
     if (!status || !status.budgets || status.budgets.length === 0) {
-      return { text: '✅ Bajo control', icon: '✅', bg: 'bg-green-100 dark:bg-green-900/30', totalPaid: 0, totalBudgeted: 0, remaining: 0 };
+      return { text: 'Bajo control', icon: '✅', bg: 'bg-green-100 dark:bg-green-900/30', totalPaid: 0, totalBudgeted: 0, remaining: 0 };
     }
     
     // Filtramos solo presupuestos fijos
     const fixedBudgets = status.budgets.filter(b => b.isFixed);
     
     if (fixedBudgets.length === 0) {
-      const totalPaid = status.totalSpent || 0;
-      const totalBudgeted = status.totalBudgeted || 0;
+      const totalPaid = parseFloat(status.totalSpent) || 0;
+      const totalBudgeted = parseFloat(status.totalBudgeted) || 0;
       return { 
         text: '✅ Bajo control', 
         icon: '✅', 
@@ -231,11 +231,12 @@ const Budgets = () => {
     let anyPaid = false;
     
     fixedBudgets.forEach(budget => {
-      const paid = budget.spent || 0;
+      const paid = parseFloat(budget.spent) || 0;
+      const amount = parseFloat(budget.amount) || 0;
       totalPaid += paid;
-      totalBudgeted += budget.amount;
+      totalBudgeted += amount;
       
-      if (paid < budget.amount) {
+      if (paid < amount) {
         allPaid = false;
       }
       if (paid > 0) {
@@ -269,7 +270,7 @@ const Budgets = () => {
     } else {
       // Nada pagado
       return { 
-        text: '⚠️ Sin pagos', 
+        text: ' Sin pagos', 
         icon: '⚠️', 
         bg: 'bg-red-100 dark:bg-red-900/30',
         totalPaid,
@@ -280,9 +281,9 @@ const Budgets = () => {
   };
 
   const getFixedExpenseStatus = (budget) => {
-    const spent = budget.spent || 0;
-    const total = budget.amount;
-    const percentagePaid = (spent / total) * 100;
+    const spent = parseFloat(budget.spent) || 0;
+    const total = parseFloat(budget.amount) || 0;
+    const percentagePaid = total > 0 ? (spent / total) * 100 : 0;
     const remaining = total - spent;
 
     if (percentagePaid >= 100) {
@@ -394,9 +395,10 @@ const Budgets = () => {
         ) : (
           budgets.map(budget => {
             const cat = budget.Category || categories.find(c => c.id === Number(budget.categoryId));
-            const isExceeded = budget.percentage_used > 100;
+            const percentage_used = parseFloat(budget.percentage_used) || 0;
+            const isExceeded = percentage_used > 100;
             const fixedStatus = budget.isFixed ? getFixedExpenseStatus(budget) : null;
-            const percentage = Math.min(100, budget.percentage_used);
+            const percentage = Math.min(100, percentage_used);
 
             return (
               <div key={budget.id} className="bg-blue-100 dark:bg-blue-900/40 rounded-3xl p-6 border border-blue-200 dark:border-blue-800/30">
@@ -447,9 +449,9 @@ const Budgets = () => {
                 </div>
                 
                 <p className="text-gray-600 dark:text-gray-400 text-base mb-1">
-                  {formatAmount(budget.spent)} pagado de {formatAmount(budget.amount)}
+                  {formatAmount(parseFloat(budget.spent) || 0)} pagado de {formatAmount(parseFloat(budget.amount) || 0)}
                 </p>
-                {budget.percentage_used < 100 && (
+                {percentage_used < 100 && (
                   <p className="text-gray-500 dark:text-gray-500 text-sm mb-4">
                     Falta: {formatAmount(fixedStatus?.remaining || 0)}
                   </p>
@@ -457,10 +459,10 @@ const Budgets = () => {
                 
                 <button
                   onClick={() => handlePayFixedExpense(budget)}
-                  disabled={budget.spent >= budget.amount}
-                  className="w-full py-3 rounded-xl border-2 border-gray-400 dark:border-gray-600 text-gray-900 dark:text-white font-semibold text-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={(parseFloat(budget.spent) || 0) >= (parseFloat(budget.amount) || 0)}
+                  className="w-full py-3 rounded-xl border-2 border-gray-400 dark:border-gray-600 text-gray-900 dark:text-white font-semibold text-lg hover:bg-gray-200 dark:hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {budget.spent >= budget.amount ? '✅ Pagado' : 'Pagar'}
+                  {(parseFloat(budget.spent) || 0) >= (parseFloat(budget.amount) || 0) ? '✅ Pagado' : 'Pagar'}
                 </button>
               </div>
             );
